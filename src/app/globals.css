@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-base: #0B0D14;
+  --color-surface: #11131D;
+  --color-panel: #171923;
+  --color-panel-soft: #202331;
+  --color-panel-hover: #292D3D;
+  --color-verse-purple: #7C5CFF;
+  --color-verse-blue: #39D0FF;
+  --color-success: #49D17D;
+  --color-warning: #FFD166;
+  --color-danger: #FF5C7A;
+  --color-text: #F6F7FB;
+  --color-muted: #A6ADBD;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-base);
+  color: var(--color-text);
+}
+
+.glass-panel {
+  background: rgba(23, 25, 35, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1rem;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
