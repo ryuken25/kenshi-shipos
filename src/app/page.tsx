@@ -129,26 +129,86 @@ export default function Home() {
   const highBlockers = openBlockers.filter(b => b.severity === 'high');
   const shipScore = calcShipScore({ completedTasks: doneTasks.length, focusMinutes, resolvedBlockers: resolvedBlockers.length, shipLogCopied, openHighBlockers: highBlockers.length });
 
+  const loadDemoWorkspace = () => {
+    setMission({
+      title: 'Polish QuestPay mobile checkout',
+      whyItMatters: 'Make the monthly app understandable and easy to test on phone.',
+      mode: 'Design',
+      energy: 'Normal',
+      deadline: 'today',
+      intention: 'Polish',
+      status: 'active',
+    });
+    setTasks([
+      { id: 'demo-1', title: 'Audit mobile hero', desc: 'Check first-screen clarity and CTA visibility.', priority: 'high', mode: 'Design', estimate: 20, status: 'done', created: Date.now(), completed: Date.now() },
+      { id: 'demo-2', title: 'Fix package card spacing', desc: 'Make packages readable at 390px.', priority: 'high', mode: 'Design', estimate: 25, status: 'now', created: Date.now() },
+      { id: 'demo-3', title: 'Test wallet connect copy', desc: 'Confirm wallet area explains public address only.', priority: 'medium', mode: 'Bug', estimate: 15, status: 'backlog', created: Date.now() },
+      { id: 'demo-4', title: 'Export ship log', desc: 'Generate a final update for Telegram/GitHub.', priority: 'medium', mode: 'Admin', estimate: 10, status: 'backlog', created: Date.now() },
+    ]);
+    setBlockers([{ id: 'demo-blocker', what: 'Browser wallet popup needs manual testing', type: 'Missing Info', severity: 'medium', nextAction: 'Open production URL on phone with wallet installed.', status: 'open', created: Date.now() }]);
+    setPrompts(getStarterPrompts());
+    setDecisions([{ id: 'demo-decision', decision: 'Keep Proof NFT disabled until core app is stable', reason: 'Core productivity flow matters more than optional Web3 badge.', impact: 'Less risk, clearer weekly app.', time: Date.now() }]);
+    setFocusMinutes(25);
+    setSprintCount(1);
+    setActiveTab('mission');
+  };
+
   // ========== RENDER ==========
   return (
     <div className="min-h-screen bg-[#0B0D14]">
       {/* Hero */}
-      <header className="relative overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#7C5CFF]/10 via-transparent to-[#39D0FF]/10" />
-        <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#7C5CFF]/20 px-3 py-1 text-xs font-bold text-[#7C5CFF]">
+      <header className="relative overflow-hidden border-b border-white/5 px-4 pb-10 pt-10 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#7C5CFF]/15 via-transparent to-[#39D0FF]/15" />
+        <div className="relative mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#7C5CFF]/20 px-3 py-2 text-xs font-bold text-[#7C5CFF]">
               <Rocket className="h-3 w-3" /> Productivity Tools Weekly Entry
             </div>
+            <h1 className="font-heading text-[clamp(2.6rem,13vw,5.8rem)] font-black leading-[0.92] tracking-[-0.07em]">Kenshi ShipOS</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-[#F6F7FB] sm:text-xl">A one-day work dashboard for people building with AI agents.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[#A6ADBD] sm:text-base">Put your mission, tasks, timer, blockers, prompts, decisions, and final report in one place — so you stop jumping between chat, notes, and todo apps.</p>
+            <p className="mt-3 rounded-2xl border border-[#39D0FF]/20 bg-[#39D0FF]/10 p-3 text-sm font-bold text-[#39D0FF]">No login. No backend. Your data stays in your browser.</p>
+            <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap">
+              <button type="button" onClick={() => setActiveTab('mission')} className="min-h-11 rounded-xl bg-[#7C5CFF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#6a4fee]">Start Today&apos;s Mission</button>
+              <button type="button" onClick={loadDemoWorkspace} className="min-h-11 rounded-xl bg-[#49D17D] px-5 py-3 text-sm font-bold text-[#0B0D14] transition hover:bg-[#3cc06c]">Try Demo Day</button>
+              <button type="button" onClick={() => setActiveTab('tasks')} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold transition hover:bg-white/10">Open Workspace</button>
+            </div>
           </div>
-          <h1 className="font-heading text-4xl font-extrabold sm:text-5xl lg:text-6xl">Kenshi ShipOS</h1>
-          <p className="mt-3 max-w-xl text-lg text-[#A6ADBD]">A daily command center for focus sprints, AI-agent tasks, blockers, prompts, decisions, and ship logs.</p>
-          <div className="mt-6 flex gap-3">
-            <button onClick={() => setActiveTab('mission')} className="rounded-xl bg-[#7C5CFF] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#6a4fee] transition">Start Today&apos;s Mission</button>
-            <button onClick={() => setActiveTab('tasks')} className="rounded-xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold hover:bg-white/10 transition">Open Workspace</button>
+          <div className="glass-panel p-4 sm:p-5">
+            <img src="/brand/kenshi/shipos-core.svg" alt="ShipOS cockpit" className="w-full rounded-3xl" />
+            <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] font-bold text-[#A6ADBD]">
+              <div className="rounded-2xl bg-white/5 p-3"><span className="block text-white">Mission</span>one outcome</div>
+              <div className="rounded-2xl bg-white/5 p-3"><span className="block text-white">Sprint</span>focus timer</div>
+              <div className="rounded-2xl bg-white/5 p-3"><span className="block text-white">Report</span>ship log</div>
+            </div>
           </div>
         </div>
       </header>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="glass-panel p-5">
+            <h2 className="font-heading text-2xl font-black">How to use ShipOS in 5 minutes</h2>
+            <ol className="mt-4 space-y-2 text-sm leading-7 text-[#A6ADBD]">
+              <li><b className="text-white">1.</b> Write one mission.</li>
+              <li><b className="text-white">2.</b> Generate/add starter tasks.</li>
+              <li><b className="text-white">3.</b> Move one task to Now.</li>
+              <li><b className="text-white">4.</b> Start a focus sprint.</li>
+              <li><b className="text-white">5.</b> Save blockers/prompts/decisions.</li>
+              <li><b className="text-white">6.</b> Copy your Ship Log.</li>
+            </ol>
+            <button type="button" onClick={loadDemoWorkspace} className="mt-4 min-h-11 w-full rounded-xl bg-[#7C5CFF] px-5 py-3 text-sm font-bold text-white">Load demo workspace</button>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              ['AI-agent builders','Save prompts, context, blockers, and ship reports so your agent does not lose the plot.'],
+              ['Coders','Plan one fix/build/deploy session and track what actually shipped.'],
+              ['Designers','Run polish sprints, note visual decisions, and export a clean handoff report.'],
+              ['Students / creators','Focus on one outcome, timebox the work, and summarize what changed.'],
+            ].map(([title,text]) => <article key={title} className="glass-panel p-4"><h3 className="font-heading text-base font-black text-white">{title}</h3><p className="mt-2 text-sm leading-6 text-[#A6ADBD]">{text}</p></article>)}
+          </div>
+        </div>
+      </section>
 
       {/* Tab Navigation */}
       <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#0B0D14]/90 backdrop-blur-xl">
@@ -500,6 +560,10 @@ function PromptVault({ prompts, setPrompts }: { prompts: Prompt[]; setPrompts: (
 
   return (
     <div>
+      <div className="glass-panel mb-4 p-4">
+        <h2 className="font-heading text-xl font-black text-white">Prompt Vault</h2>
+        <p className="mt-2 text-sm leading-6 text-[#A6ADBD]">Prompt Vault keeps reusable instructions for your AI coding/design agent. Copy one when you need to restart context or ask for a focused fix.</p>
+      </div>
       <div className="flex gap-2 mb-4">
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search prompts..." className="flex-1 rounded-lg bg-white/5 border border-white/10 px-4 py-2 text-sm focus:border-[#7C5CFF] focus:outline-none" />
         <button onClick={() => setShowAdd(!showAdd)} className="rounded-lg bg-[#7C5CFF] px-4 py-2 text-sm font-bold text-white">+ Add</button>
@@ -521,9 +585,10 @@ function PromptVault({ prompts, setPrompts }: { prompts: Prompt[]; setPrompts: (
           <div key={p.id} className="glass-panel p-4">
             <div className="flex items-start justify-between">
               <div><h3 className="text-sm font-bold">{p.title}</h3><span className="text-[10px] text-[#A6ADBD]">{p.category}</span></div>
-              <div className="flex gap-1">
+      <div className="flex gap-1">
                 <button onClick={() => toggleFav(p.id)} className={`text-sm ${p.favorite ? 'text-[#FFD166]' : 'text-[#A6ADBD]'}`}>★</button>
                 <button onClick={() => copyPrompt(p.body)} className="rounded bg-white/10 px-2 py-1 text-[10px] font-bold hover:bg-white/20">Copy</button>
+                <button onClick={() => copyPrompt(`${p.body}\n\nCurrent mission context: use the active ShipOS mission, current task, blockers, and decisions as context.`)} className="rounded bg-[#7C5CFF]/20 px-2 py-1 text-[10px] font-bold text-[#7C5CFF]">Use mission</button>
                 <button onClick={() => deletePrompt(p.id)} className="rounded bg-[#FF5C7A]/10 px-2 py-1 text-[10px] font-bold text-[#FF5C7A]">×</button>
               </div>
             </div>
@@ -616,7 +681,11 @@ Discord: kenshiwassleepy`;
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+      <div className="glass-panel mb-4 p-4">
+        <h2 className="font-heading text-xl font-black text-white">Ship Log</h2>
+        <p className="mt-2 text-sm leading-6 text-[#A6ADBD]">Ship Log turns your session into a copyable update for Discord, GitHub, X, or your own notes.</p>
+      </div>
+      <div className="grid gap-2 mb-4 sm:flex">
         <button onClick={generateLog} className="rounded-lg bg-[#7C5CFF] px-4 py-2 text-sm font-bold text-white">Generate Ship Log</button>
         {logText && <button onClick={copyLog} className="rounded-lg bg-[#49D17D] px-4 py-2 text-sm font-bold text-[#0B0D14]">Copy Log</button>}
         {logText && <button onClick={() => { const blob = new Blob([logText], { type: 'text/markdown' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ship-log-${new Date().toISOString().slice(0,10)}.md`; a.click(); }} className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold hover:bg-white/10">Download MD</button>}
