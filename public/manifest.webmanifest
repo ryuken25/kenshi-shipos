@@ -1,0 +1,11 @@
+{
+  "name": "Kenshi ShipOS",
+  "short_name": "ShipOS",
+  "description": "Local-first productivity cockpit for AI-assisted builders.",
+  "start_url": "/mission",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0D14",
+  "theme_color": "#7C5CFF",
+  "icons": [{"src":"/brand/verse/verse-mark.svg","sizes":"any","type":"image/svg+xml"}]
+}

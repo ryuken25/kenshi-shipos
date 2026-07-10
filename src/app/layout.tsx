@@ -3,6 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Kenshi ShipOS",
+  manifest: "/manifest.webmanifest",
   description: "A daily command center for focus sprints, AI-agent tasks, blockers, prompts, decisions, and ship logs.",
 };
 
