@@ -1,0 +1,14 @@
+{
+  "checks": {
+    "onboarding promise": true,
+    "workspace choices": true,
+    "sample badge": true,
+    "sample persisted": true,
+    "command palette": true,
+    "palette routes": true
+  },
+  "errors": [],
+  "matrixPass": 81,
+  "matrixTotal": 81,
+  "failures": []
+}
