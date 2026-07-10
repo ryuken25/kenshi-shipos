@@ -19,6 +19,7 @@ import { generateShipLog } from '@/lib/ship-log';
 import { createTimer, getRemainingMs, getDisplayTime, pauseTimer, resumeTimer, isTimerComplete, formatTime } from '@/lib/timer';
 import { parseQuickCapture, createTaskFromParsed, type ParsedTask } from '@/lib/task-parser';
 import { getTabFromPathname, getPathForTab, type ShipOSTab, TAB_TO_PATH } from '@/lib/navigation/shiposRoutes';
+import { VerseLogo } from '@/components/brand/VerseLogo';
 import { toLocalDateKey, greeting, localDateKeyFromTs, isToday as isTodayDate } from '@/lib/dates/localDate';
 
 /* ── Types ────────────────────────────────────────────────── */
@@ -338,10 +339,13 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <img src="/brand/verse/verse-mark.svg" alt="VERSE logo" className="h-10 w-10 shrink-0 rounded-2xl" />
+              <VerseLogo size={40} priority />
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--verse-cyan)]">Built for VERSE community</p>
-                <h1 className="truncate font-heading text-xl font-black tracking-[-0.04em] sm:text-3xl"><span className="gradient-text">Kenshi ShipOS</span></h1>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-black tracking-[0.18em] text-white">VERSE</span>
+                  <span className="hidden text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--color-muted)] sm:inline">Community build</span>
+                </div>
+                <h1 className="truncate text-lg font-black text-white sm:text-xl">Kenshi ShipOS</h1>
               </div>
             </div>
             <div className="flex items-center gap-2">
