@@ -332,27 +332,27 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
   }, [tab, state, momentum, capacity, reviewTab, focusStartToken]);
 
   return (
-    <main className="min-h-screen bg-[#0B0D14] pb-24 text-white md:pb-0">
+    <main className="min-h-screen bg-[var(--color-base)] pb-24 text-white md:pb-0">
       {/* ── Header ── */}
-      <header className="border-b border-white/10 bg-[#0B0D14]/95 backdrop-blur-xl">
+      <header className="glass-panel border-b border-white/[0.06] bg-[var(--glass-bg)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <img src="/brand/verse/verse-mark.svg" alt="VERSE logo" className="h-10 w-10 shrink-0 rounded-2xl" />
               <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#39D0FF]">Built for VERSE community</p>
-                <h1 className="truncate font-heading text-xl font-black tracking-[-0.04em] sm:text-3xl">Kenshi ShipOS</h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--verse-cyan)]">Built for VERSE community</p>
+                <h1 className="truncate font-heading text-xl font-black tracking-[-0.04em] sm:text-3xl"><span className="gradient-text">Kenshi ShipOS</span></h1>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {sampleWorkspace && <span className="rounded-full border border-[#39D0FF]/30 bg-[#39D0FF]/10 px-3 py-1.5 text-[10px] font-black text-[#39D0FF]">Sample workspace</span>}
+              {sampleWorkspace && <span className="rounded-full border border-[var(--verse-cyan)]/30 bg-[var(--verse-cyan)]/10 px-3 py-1.5 text-[10px] font-black text-[var(--verse-cyan)]">Sample workspace</span>}
               {state.activeTimer && state.activeTimer.status === 'running' && (
-                <button onClick={() => go('focus')} className="flex items-center gap-2 rounded-full border border-[#49D17D]/30 bg-[#49D17D]/10 px-3 py-1.5 text-[10px] font-black text-[#49D17D]">
-                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#49D17D]" />
+                <button onClick={() => go('focus')} className="flex items-center gap-2 rounded-full border border-[#49D17D]/30 bg-[var(--color-success)]/10 px-3 py-1.5 text-[10px] font-black text-[#49D17D]">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--color-success)]" />
                   <TimerTick timer={state.activeTimer} />
                 </button>
               )}
-              <button onClick={() => setPaletteOpen(true)} className="hidden min-h-10 items-center gap-2 rounded-2xl bg-white/10 px-3 text-xs font-black text-[#DDE7FF] sm:inline-flex">
+              <button onClick={() => setPaletteOpen(true)} className="hidden min-h-10 items-center gap-2 rounded-2xl bg-white/[0.08] px-3 text-xs font-black text-[var(--color-text)] sm:inline-flex">
                 <Command size={14} /> Cmd K
               </button>
             </div>
@@ -361,8 +361,8 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
           {/* ── Tagline ── */}
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="font-heading text-lg font-black tracking-[-0.03em] text-white sm:text-xl">Turn a realistic plan into shipped work.</p>
-              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#A6ADBD] sm:text-sm">Set one mission, protect your available time, enter focus, recover from blockers, and generate your progress update automatically.</p>
+              <p className="font-heading text-lg font-black tracking-[-0.03em] sm:text-xl"><span className="gradient-text">Turn a realistic plan into shipped work.</span></p>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[var(--color-muted)] sm:text-sm">Set one mission, protect your available time, enter focus, recover from blockers, and generate your progress update automatically.</p>
             </div>
             <div className="hidden grid-cols-4 gap-1.5 text-center text-[10px] sm:grid">
               <MomentumRing value={momentum.total} label={momentum.label} />
@@ -373,7 +373,7 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
           <nav className="hidden gap-1.5 overflow-x-auto md:flex" aria-label="ShipOS sections">
             {navItems.map(n => (
               <button key={n.id} onClick={() => go(n.id)}
-                className={`relative flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl px-3 text-xs font-black transition ${tab === n.id ? 'bg-[#7C5CFF] text-white' : 'bg-white/5 text-[#A6ADBD] hover:bg-white/10 hover:text-white'}`}>
+                className={`relative flex min-h-10 shrink-0 items-center gap-1.5 rounded-2xl px-3 text-xs font-black transition ${tab === n.id ? 'bg-gradient-to-r from-[var(--verse-violet)] to-[var(--verse-cyan)] text-white shadow-lg shadow-[var(--verse-violet)]/20' : 'bg-white/[0.04] text-[var(--color-muted)] hover:bg-white/[0.08] hover:text-white'}`}>
                 <n.icon size={14} />{n.label}
                 {n.id === 'review' && openBlockers > 0 && <span className="rounded-full bg-red-500 px-1.5 text-[9px] text-white">{openBlockers}</span>}
               </button>
@@ -392,16 +392,16 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
       </section>
 
       {/* ── Mobile bottom nav ── */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#101321]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 backdrop-blur-xl md:hidden" aria-label="Mobile nav">
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-[var(--color-surface)]/95 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 backdrop-blur-xl md:hidden" aria-label="Mobile nav">
         <div className="grid grid-cols-5 gap-1">
           {bottomNav.map(n => (
             <button key={n.id} onClick={() => go(n.id)}
-              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-black ${tab === n.id ? 'bg-[#7C5CFF] text-white' : 'text-[#A6ADBD]'}`}>
+              className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-black ${tab === n.id ? 'bg-[var(--verse-violet)] text-white' : 'text-[var(--color-muted)]'}`}>
               <n.icon size={18} />{n.label}
               {n.id === 'review' && openBlockers > 0 && <span className="absolute right-3 top-2 rounded-full bg-red-500 px-1.5 text-[8px] text-white">{openBlockers}</span>}
             </button>
           ))}
-          <button onClick={() => setMoreOpen(true)} className="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-black text-[#A6ADBD]">
+          <button onClick={() => setMoreOpen(true)} className="flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[10px] font-black text-[var(--color-muted)]">
             <MoreHorizontal size={18} />More
           </button>
         </div>
@@ -410,11 +410,11 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
       {/* ── More sheet ── */}
       {moreOpen && (
         <div className="fixed inset-0 z-[60] bg-black/60 md:hidden" onClick={() => setMoreOpen(false)}>
-          <div className="absolute inset-x-0 bottom-0 rounded-t-[2rem] border border-white/10 bg-[#101321] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]" onClick={e => e.stopPropagation()}>
-            <div className="mb-3 flex items-center justify-between"><b>More</b><button onClick={() => setMoreOpen(false)} className="rounded-full bg-white/10 p-2"><X size={18} /></button></div>
+          <div className="absolute inset-x-0 bottom-0 rounded-t-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]" onClick={e => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between"><b>More</b><button onClick={() => setMoreOpen(false)} className="rounded-full bg-white/[0.08] p-2"><X size={18} /></button></div>
             <div className="grid gap-2">
               {moreNav.map(n => (
-                <button key={n.id} onClick={() => go(n.id)} className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/5 px-4 font-bold">
+                <button key={n.id} onClick={() => go(n.id)} className="flex min-h-12 items-center gap-3 rounded-2xl bg-white/[0.04] px-4 font-bold">
                   <n.icon size={18} />{n.label}
                 </button>
               ))}
@@ -431,35 +431,35 @@ export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab }
 
       {/* ── Toast ── */}
       {/* Undo Toast */}
-      {undoAction && <div className="fixed bottom-24 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#11131D] border border-white/10 px-4 py-3 text-sm font-bold shadow-2xl md:bottom-8"><span>{undoAction.label}</span><button onClick={() => { undoAction.undo(); setUndoAction(null); setToast('Undone'); }} className="rounded-xl bg-[#7C5CFF] px-3 py-1.5 text-xs font-black">Undo</button><button onClick={() => setUndoAction(null)} className="rounded-xl bg-white/10 px-3 py-1.5 text-xs">Dismiss</button></div>}
+      {undoAction && <div className="fixed bottom-24 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[var(--color-surface)] border border-white/[0.08] px-4 py-3 text-sm font-bold shadow-2xl md:bottom-8"><span>{undoAction.label}</span><button onClick={() => { undoAction.undo(); setUndoAction(null); setToast('Undone'); }} className="rounded-xl bg-[var(--verse-violet)] px-3 py-1.5 text-xs font-black">Undo</button><button onClick={() => setUndoAction(null)} className="rounded-xl bg-white/[0.08] px-3 py-1.5 text-xs">Dismiss</button></div>}
 
       {/* Quick Task Sheet */}
       {quickTaskOpen && <div className="fixed inset-0 z-[75] flex items-end justify-center bg-black/70 sm:items-center" onClick={() => setQuickTaskOpen(false)}>
-        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/10 bg-[#11131D] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
+        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
           <h3 className="text-lg font-black">Quick capture</h3>
-          <p className="mt-1 text-xs text-[#A6ADBD]">Supports: !p0 #tag 30m tomorrow weekly</p>
+          <p className="mt-1 text-xs text-[var(--color-muted)]">Supports: !p0 #tag 30m tomorrow weekly</p>
           <div className="mt-4 space-y-3">
             <I v={quickTaskTitle} onChange={setQuickTaskTitle} placeholder="What needs to be done?" />
-            {quickTaskTitle.trim() && (() => { const p = parseQuickCapture(quickTaskTitle); return p ? <div className="rounded-xl bg-white/[0.05] p-3 text-xs"><p className="font-bold">{p.title}</p><p className="mt-1 text-[#A6ADBD]">{p.priority} · {p.estimateMinutes || 30}m{p.tags.length ? ' · ' + p.tags.map(t => '#'+t).join(' ') : ''}{p.scheduledDate ? ' · ' + p.scheduledDate : ''}</p></div> : null; })()}
-            <button onClick={submitQuickTask} className="w-full rounded-2xl bg-[#49D17D] py-3 font-black text-[#0B0D14]">Add task</button>
+            {quickTaskTitle.trim() && (() => { const p = parseQuickCapture(quickTaskTitle); return p ? <div className="rounded-xl bg-white/[0.05] p-3 text-xs"><p className="font-bold">{p.title}</p><p className="mt-1 text-[var(--color-muted)]">{p.priority} · {p.estimateMinutes || 30}m{p.tags.length ? ' · ' + p.tags.map(t => '#'+t).join(' ') : ''}{p.scheduledDate ? ' · ' + p.scheduledDate : ''}</p></div> : null; })()}
+            <button onClick={submitQuickTask} className="w-full rounded-2xl bg-[var(--color-success)] py-3 font-black text-[var(--color-base)]">Add task</button>
           </div>
         </div>
       </div>}
 
       {/* Quick Blocker Sheet */}
       {quickBlockerOpen && <div className="fixed inset-0 z-[75] flex items-end justify-center bg-black/70 sm:items-center" onClick={() => setQuickBlockerOpen(false)}>
-        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/10 bg-[#11131D] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
+        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
           <h3 className="text-lg font-black">What is blocking the ship?</h3>
           <div className="mt-4 space-y-3">
             <I v={quickTaskTitle} onChange={setQuickTaskTitle} placeholder="Describe the blocker" />
-            <button onClick={() => { if (!quickTaskTitle.trim()) return; setState(s => ({ ...s, blockers: [...s.blockers, { id: uid(), title: quickTaskTitle.trim(), severity: 'med', category: 'other', status: 'open', note: '', nextAction: '', createdAt: Date.now() }] })); addEvent('blocker_created', quickTaskTitle.trim()); setToast('Blocker added'); setQuickBlockerOpen(false); setQuickTaskTitle(''); }} className="w-full rounded-2xl bg-[#7C5CFF] py-3 font-black">Add blocker</button>
+            <button onClick={() => { if (!quickTaskTitle.trim()) return; setState(s => ({ ...s, blockers: [...s.blockers, { id: uid(), title: quickTaskTitle.trim(), severity: 'med', category: 'other', status: 'open', note: '', nextAction: '', createdAt: Date.now() }] })); addEvent('blocker_created', quickTaskTitle.trim()); setToast('Blocker added'); setQuickBlockerOpen(false); setQuickTaskTitle(''); }} className="w-full rounded-2xl bg-[var(--verse-violet)] py-3 font-black">Add blocker</button>
           </div>
         </div>
       </div>}
 
-      {toast && <div role="status" aria-live="polite" className="fixed left-1/2 top-4 z-[80] -translate-x-1/2 rounded-2xl bg-[#49D17D] px-4 py-3 text-sm font-black text-[#0B0D14] shadow-2xl">{toast}</div>}
+      {toast && <div role="status" aria-live="polite" className="fixed left-1/2 top-4 z-[80] -translate-x-1/2 rounded-2xl bg-[var(--color-success)] px-4 py-3 text-sm font-black text-[var(--color-base)] shadow-2xl">{toast}</div>}
 
-      <footer className="mx-auto max-w-7xl px-4 pb-8 pt-3 text-center text-[10px] text-[#A6ADBD] sm:px-6 md:pb-6">Built for the VERSE community — Design vs Coding: Productivity Tools — July 2026</footer>
+      <footer className="mx-auto max-w-7xl px-4 pb-8 pt-3 text-center text-[10px] text-[var(--color-muted)] sm:px-6 md:pb-6">Built for the VERSE community — Design vs Coding: Productivity Tools — July 2026</footer>
     </main>
   );
 }
@@ -477,14 +477,14 @@ function MomentumRing({ value, label }: { value: number; label: string }) {
   const r = 20, c = 2 * Math.PI * r;
   const dash = (value / 100) * c;
   return (
-    <div className="col-span-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] p-3">
+    <div className="col-span-4 flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.05] p-3">
       <svg width="48" height="48" viewBox="0 0 48 48" className="shrink-0 -rotate-90">
         <circle cx="24" cy="24" r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
         <circle cx="24" cy="24" r={r} fill="none" stroke="#49D17D" strokeWidth="4" strokeDasharray={c} strokeDashoffset={c - dash} strokeLinecap="round" />
       </svg>
       <div>
         <p className="text-lg font-black text-white">{value}</p>
-        <p className="text-[10px] text-[#A6ADBD]">{label}</p>
+        <p className="text-[10px] text-[var(--color-muted)]">{label}</p>
       </div>
     </div>
   );
@@ -492,20 +492,20 @@ function MomentumRing({ value, label }: { value: number; label: string }) {
 
 /* ── Panel / Input helpers ────────────────────────────────── */
 function Panel({ title, subtitle, children, action }: { title: string; subtitle?: string; children: any; action?: any }) {
-  return <section className="rounded-[1.5rem] border border-white/10 bg-[#11131D]/85 p-4 shadow-2xl sm:p-6">
+  return <section className="glass-card rounded-[1.5rem] p-4 sm:p-6">
     <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-      <div><h2 className="font-heading text-xl font-black tracking-[-0.04em]">{title}</h2>{subtitle && <p className="mt-1 text-xs leading-5 text-[#A6ADBD]">{subtitle}</p>}</div>{action}
+      <div><h2 className="font-heading text-xl font-black tracking-[-0.04em]">{title}</h2>{subtitle && <p className="mt-1 text-xs leading-5 text-[var(--color-muted)]">{subtitle}</p>}</div>{action}
     </div>{children}
   </section>;
 }
 function StatPill({ label, value }: { label: string; value: any }) {
-  return <div className="rounded-2xl border border-white/10 bg-white/[0.05] p-2.5"><p className="text-[9px] font-bold uppercase text-[#A6ADBD]">{label}</p><p className="mt-0.5 text-base font-black text-white">{value}</p></div>;
+  return <div className="glass-card rounded-2xl p-2.5"><p className="text-[9px] font-bold uppercase text-[var(--color-muted)]">{label}</p><p className="mt-0.5 text-base font-black text-white">{value}</p></div>;
 }
 function Empty({ text }: { text: string }) {
-  return <div className="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-[#A6ADBD]">{text}</div>;
+  return <div className="rounded-2xl border border-dashed border-white/[0.08] p-6 text-center text-sm text-[var(--color-muted)]">{text}</div>;
 }
-const I = ({ v, onChange, ...p }: any) => <input value={v} onChange={(e: any) => onChange(e.target.value)} {...p} className={`min-h-11 w-full rounded-2xl border border-white/10 bg-white/5 px-4 text-base outline-none focus:border-[#39D0FF] ${p.className || ''}`} />;
-const TA = ({ v, onChange, ...p }: any) => <textarea value={v} onChange={(e: any) => onChange(e.target.value)} {...p} className={`w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-base outline-none focus:border-[#39D0FF] ${p.className || ''}`} />;
+const I = ({ v, onChange, ...p }: any) => <input value={v} onChange={(e: any) => onChange(e.target.value)} {...p} className={`min-h-11 w-full rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 text-base outline-none focus:border-[#39D0FF] ${p.className || ''}`} />;
+const TA = ({ v, onChange, ...p }: any) => <textarea value={v} onChange={(e: any) => onChange(e.target.value)} {...p} className={`w-full rounded-2xl border border-white/[0.08] bg-white/[0.04] px-4 py-3 text-base outline-none focus:border-[#39D0FF] ${p.className || ''}`} />;
 
 /* ── TODAY PAGE ───────────────────────────────────────────── */
 function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus, addEvent, setToast, go }: any) {
@@ -526,11 +526,11 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
       <Panel title="Today" subtitle="Set one outcome and the time you truly have.">
         <I v={state.mission.title} onChange={(v: string) => updateMission({ title: v })} placeholder="What must ship today?" />
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Why it matters</label><TA v={state.mission.why} onChange={(v: string) => updateMission({ why: v })} placeholder="Why does this matter?" rows={2} /></div>
+          <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Why it matters</label><TA v={state.mission.why} onChange={(v: string) => updateMission({ why: v })} placeholder="Why does this matter?" rows={2} /></div>
           <div className="space-y-2">
-            <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Available minutes</label><I v={String(state.mission.availableMinutes)} onChange={(v: string) => updateMission({ availableMinutes: parseInt(v) || 0 })} type="number" /></div>
-            <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Energy</label>
-              <div className="flex gap-1">{(['low', 'normal', 'high'] as Energy[]).map(e => <button key={e} onClick={() => updateMission({ energy: e })} className={`flex-1 rounded-xl py-2 text-xs font-black capitalize ${state.mission.energy === e ? 'bg-[#7C5CFF] text-white' : 'bg-white/5 text-[#A6ADBD]'}`}>{e}</button>)}</div>
+            <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Available minutes</label><I v={String(state.mission.availableMinutes)} onChange={(v: string) => updateMission({ availableMinutes: parseInt(v) || 0 })} type="number" /></div>
+            <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Energy</label>
+              <div className="flex gap-1">{(['low', 'normal', 'high'] as Energy[]).map(e => <button key={e} onClick={() => updateMission({ energy: e })} className={`flex-1 rounded-xl py-2 text-xs font-black capitalize ${state.mission.energy === e ? 'bg-[var(--verse-violet)] text-white' : 'bg-white/[0.04] text-[var(--color-muted)]'}`}>{e}</button>)}</div>
             </div>
           </div>
         </div>
@@ -540,20 +540,20 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
       <Panel title="Ship Momentum" subtitle={momentum.label}>
         <div className="flex items-center gap-4">
           <svg width="80" height="80" viewBox="0 0 80 80" className="shrink-0 -rotate-90">
-            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-            <circle cx="40" cy="40" r="34" fill="none" stroke="#49D17D" strokeWidth="6" strokeDasharray={2 * Math.PI * 34} strokeDashoffset={2 * Math.PI * 34 * (1 - momentum.total / 100)} strokeLinecap="round" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+            <circle cx="40" cy="40" r="34" fill="none" stroke="var(--gradient-primary)" strokeWidth="6" strokeDasharray={2 * Math.PI * 34} strokeDashoffset={2 * Math.PI * 34 * (1 - momentum.total / 100)} strokeLinecap="round" />
           </svg>
           <div className="flex-1 space-y-1.5">
             {(['realityPlan', 'execution', 'focus', 'recovery', 'ship'] as const).map(k => (
               <div key={k} className="flex items-center gap-2">
-                <span className="w-20 text-[9px] capitalize text-[#A6ADBD]">{k === 'realityPlan' ? 'Plan' : k}</span>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-[#49D17D]" style={{ width: `${(momentum[k] / (k === 'execution' ? 30 : k === 'focus' ? 25 : k === 'recovery' ? 15 : k === 'ship' ? 10 : 20)) * 100}%` }} /></div>
-                <span className="w-6 text-right text-[9px] text-[#A6ADBD]">{momentum[k]}</span>
+                <span className="w-20 text-[9px] capitalize text-[var(--color-muted)]">{k === 'realityPlan' ? 'Plan' : k}</span>
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.08]"><div className="h-full rounded-full bg-[var(--color-success)]" style={{ width: `${(momentum[k] / (k === 'execution' ? 30 : k === 'focus' ? 25 : k === 'recovery' ? 15 : k === 'ship' ? 10 : 20)) * 100}%` }} /></div>
+                <span className="w-6 text-right text-[9px] text-[var(--color-muted)]">{momentum[k]}</span>
               </div>
             ))}
           </div>
         </div>
-        <p className="mt-3 text-center text-2xl font-black">{momentum.total}<span className="text-sm text-[#A6ADBD]">/100</span></p>
+        <p className="mt-3 text-center text-2xl font-black">{momentum.total}<span className="text-sm text-[var(--color-muted)]">/100</span></p>
       </Panel>
     </div>
 
@@ -565,31 +565,31 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
         <StatPill label="Buffer" value={`${capacity.buffer}m`} />
         <StatPill label="Remaining" value={`${Math.max(0, capacity.remaining)}m`} />
       </div>
-      <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-white/10">
-        <div className={`h-full rounded-full transition-all ${capacity.label === 'overloaded' ? 'bg-red-500' : capacity.label === 'tight' ? 'bg-yellow-500' : 'bg-[#49D17D]'}`} style={{ width: `${Math.min(100, (capacity.planned / Math.max(1, state.mission.availableMinutes)) * 100)}%` }} />
+      <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-white/[0.08]">
+        <div className={`h-full rounded-full transition-all ${capacity.label === 'overloaded' ? 'bg-red-500' : capacity.label === 'tight' ? 'bg-yellow-500' : 'bg-[var(--color-success)]'}`} style={{ width: `${Math.min(100, (capacity.planned / Math.max(1, state.mission.availableMinutes)) * 100)}%` }} />
       </div>
       {defers.length > 0 && <div className="mt-3 space-y-1.5">{defers.map(d => <div key={d.task.id} className="flex items-center justify-between rounded-xl bg-yellow-500/10 px-3 py-2 text-xs"><span className="text-yellow-200">Move &quot;{d.task.title}&quot; to tomorrow and recover {d.minutesSaved}m</span><button onClick={() => updateTask(d.task.id, { status: 'inbox' })} className="rounded-lg bg-yellow-500/20 px-2 py-1 text-[10px] font-black text-yellow-100">Defer</button></div>)}</div>}
     </Panel>
 
     {/* Top 3 */}
-    <Panel title="Top 3" subtitle="Your most important tasks for today." action={<button onClick={() => go('tasks')} className="rounded-xl bg-white/10 px-3 py-2 text-xs font-bold">All tasks</button>}>
+    <Panel title="Top 3" subtitle="Your most important tasks for today." action={<button onClick={() => go('tasks')} className="rounded-xl bg-white/[0.08] px-3 py-2 text-xs font-bold">All tasks</button>}>
       <div className="space-y-2">
         {top3Tasks.length > 0 ? top3Tasks.map((t: Task, i: number) => (
           <div key={t.id} className="flex items-center gap-3 rounded-2xl bg-white/[0.05] p-3">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#7C5CFF] text-xs font-black">{i + 1}</span>
+            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--verse-violet)] text-xs font-black">{i + 1}</span>
             <div className="min-w-0 flex-1">
-              <p className={`text-sm font-bold ${t.status === 'done' ? 'line-through text-[#A6ADBD]' : ''}`}>{t.title}</p>
-              <p className="text-[10px] text-[#A6ADBD]">{t.priority} · {t.estimateMinutes || 30}m{t.dueAt ? ` · due ${new Date(t.dueAt).toLocaleDateString()}` : ''}</p>
+              <p className={`text-sm font-bold ${t.status === 'done' ? 'line-through text-[var(--color-muted)]' : ''}`}>{t.title}</p>
+              <p className="text-[10px] text-[var(--color-muted)]">{t.priority} · {t.estimateMinutes || 30}m{t.dueAt ? ` · due ${new Date(t.dueAt).toLocaleDateString()}` : ''}</p>
             </div>
-            {t.status !== 'done' && <button onClick={() => startFocus(t.id)} className="rounded-xl bg-[#49D17D] px-3 py-2 text-xs font-black text-[#0B0D14]"><Play size={14} /></button>}
-            <button onClick={() => updateTask(t.id, { status: t.status === 'done' ? 'today' : 'done' })} className={`rounded-xl px-3 py-2 text-xs font-black ${t.status === 'done' ? 'bg-[#49D17D] text-[#0B0D14]' : 'bg-white/10'}`}>{t.status === 'done' ? '✓' : <Circle size={14} />}</button>
+            {t.status !== 'done' && <button onClick={() => startFocus(t.id)} className="rounded-xl bg-[var(--color-success)] px-3 py-2 text-xs font-black text-[var(--color-base)]"><Play size={14} /></button>}
+            <button onClick={() => updateTask(t.id, { status: t.status === 'done' ? 'today' : 'done' })} className={`rounded-xl px-3 py-2 text-xs font-black ${t.status === 'done' ? 'bg-[var(--color-success)] text-[var(--color-base)]' : 'bg-white/[0.08]'}`}>{t.status === 'done' ? '✓' : <Circle size={14} />}</button>
           </div>
         )) : <Empty text="Select up to 3 tasks from your task list as today's Top 3." />}
       </div>
       {state.tasks.filter((t: Task) => !state.mission.top3.includes(t.id) && t.status !== 'done' && t.status !== 'archived').length > 0 && (
-        <div className="mt-3"><p className="mb-1.5 text-[10px] font-bold uppercase text-[#39D0FF]">Add to Top 3</p>
+        <div className="mt-3"><p className="mb-1.5 text-[10px] font-bold uppercase text-[var(--verse-cyan)]">Add to Top 3</p>
           <div className="flex flex-wrap gap-1.5">{state.tasks.filter((t: Task) => !state.mission.top3.includes(t.id) && t.status !== 'done' && t.status !== 'archived').slice(0, 6).map((t: Task) => (
-            <button key={t.id} onClick={() => toggleTop(t.id)} className="rounded-full bg-white/5 px-3 py-1.5 text-[10px] font-bold hover:bg-white/10">{t.priority} · {t.title}</button>
+            <button key={t.id} onClick={() => toggleTop(t.id)} className="rounded-full bg-white/[0.04] px-3 py-1.5 text-[10px] font-bold hover:bg-white/[0.08]">{t.priority} · {t.title}</button>
           ))}</div>
         </div>
       )}
@@ -601,16 +601,16 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
         {state.blockers.filter((b: Blocker) => b.status === 'open').length > 0 ? state.blockers.filter((b: Blocker) => b.status === 'open').map((b: Blocker) => (
           <div key={b.id} className="mb-2 flex items-center gap-3 rounded-2xl bg-white/[0.05] p-3">
             <AlertTriangle size={16} className={b.severity === 'high' ? 'text-red-400' : b.severity === 'med' ? 'text-yellow-400' : 'text-green-400'} />
-            <div className="min-w-0 flex-1"><p className="text-sm font-bold">{b.title}</p><p className="text-[10px] text-[#A6ADBD]">{b.severity} · {b.category}</p></div>
+            <div className="min-w-0 flex-1"><p className="text-sm font-bold">{b.title}</p><p className="text-[10px] text-[var(--color-muted)]">{b.severity} · {b.category}</p></div>
           </div>
-        )) : <p className="text-sm text-[#A6ADBD]">Nothing blocking you right now. ✨</p>}
+        )) : <p className="text-sm text-[var(--color-muted)]">Nothing blocking you right now. ✨</p>}
       </Panel>
 
       <Panel title="Recent Activity">
         <div className="space-y-2">{recentEvents.length > 0 ? recentEvents.map((e: AppEvent) => (
           <div key={e.id} className="flex items-start gap-2">
-            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#7C5CFF]" />
-            <div><p className="text-xs">{e.detail}</p><p className="text-[10px] text-[#A6ADBD]">{new Date(e.ts).toLocaleTimeString()}</p></div>
+            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--verse-violet)]" />
+            <div><p className="text-xs">{e.detail}</p><p className="text-[10px] text-[var(--color-muted)]">{new Date(e.ts).toLocaleTimeString()}</p></div>
           </div>
         )) : <Empty text="Real events appear as you work." />}</div>
       </Panel>
@@ -650,20 +650,20 @@ function TasksPage({ state, addTask, updateTask, deleteTask, startFocus, setToas
 
   const cols: TaskStatus[] = ['inbox', 'today', 'doing', 'done'];
 
-  return <div data-page="tasks"><Panel title="Tasks" subtitle="Capture the next action, not the entire project." action={<div className="flex gap-1"><button onClick={() => setView('list')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'list' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>List</button><button onClick={() => setView('board')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'board' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>Board</button></div>}>
+  return <div data-page="tasks"><Panel title="Tasks" subtitle="Capture the next action, not the entire project." action={<div className="flex gap-1"><button onClick={() => setView('list')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'list' ? 'bg-[var(--verse-violet)]' : 'bg-white/[0.04]'}`}>List</button><button onClick={() => setView('board')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'board' ? 'bg-[var(--verse-violet)]' : 'bg-white/[0.04]'}`}>Board</button></div>}>
     {/* Quick add */}
     <div className="grid gap-2 rounded-3xl bg-white/[0.03] p-3 sm:grid-cols-[1fr_auto_auto_auto_auto]">
       <I v={title} onChange={setTitle} placeholder="New task (or paste: Finish QA !p0 #mobile 30m)" />
-      <select value={priority} onChange={e => setPriority(e.target.value as Priority)} className="min-h-11 rounded-2xl bg-white/5 px-3 text-sm"><option>P0</option><option>P1</option><option>P2</option></select>
+      <select value={priority} onChange={e => setPriority(e.target.value as Priority)} className="min-h-11 rounded-2xl bg-white/[0.04] px-3 text-sm"><option>P0</option><option>P1</option><option>P2</option></select>
       <I v={estimate} onChange={setEstimate} placeholder="30m" className="w-20" />
       <I v={tags} onChange={setTags} placeholder="#tags" className="w-28" />
-      <button onClick={add} className="rounded-2xl bg-[#7C5CFF] px-5 font-black">Add</button>
+      <button onClick={add} className="rounded-2xl bg-[var(--verse-violet)] px-5 font-black">Add</button>
     </div>
 
     {/* Filters */}
     <div className="my-3 flex gap-1.5 overflow-x-auto pb-1">
       {['all', 'today', 'upcoming', 'no-date', 'done', 'P0', 'P1', 'P2'].map(f => (
-        <button key={f} onClick={() => setFilter(f)} className={`shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black ${filter === f ? 'bg-[#39D0FF] text-[#0B0D14]' : 'bg-white/5 text-[#A6ADBD]'}`}>{f}</button>
+        <button key={f} onClick={() => setFilter(f)} className={`shrink-0 rounded-full px-3 py-1.5 text-[10px] font-black ${filter === f ? 'bg-[var(--verse-cyan)] text-[var(--color-base)]' : 'bg-white/[0.04] text-[var(--color-muted)]'}`}>{f}</button>
       ))}
       <I v={search} onChange={setSearch} placeholder="Search…" className="ml-auto w-32 text-xs" />
     </div>
@@ -672,13 +672,13 @@ function TasksPage({ state, addTask, updateTask, deleteTask, startFocus, setToas
     {view === 'list' && <div className="space-y-1.5">{filtered.map((t: Task) => (
       <div key={t.id} className="rounded-2xl bg-white/[0.04] p-3">
         <div className="flex items-center gap-3">
-          <button onClick={() => updateTask(t.id, { status: t.status === 'done' ? 'inbox' : 'done' })} className={`shrink-0 rounded-full p-1 ${t.status === 'done' ? 'text-[#49D17D]' : 'text-[#A6ADBD]'}`}>{t.status === 'done' ? <CheckCircle2 size={18} /> : <Circle size={18} />}</button>
+          <button onClick={() => updateTask(t.id, { status: t.status === 'done' ? 'inbox' : 'done' })} className={`shrink-0 rounded-full p-1 ${t.status === 'done' ? 'text-[#49D17D]' : 'text-[var(--color-muted)]'}`}>{t.status === 'done' ? <CheckCircle2 size={18} /> : <Circle size={18} />}</button>
           <div className="min-w-0 flex-1 cursor-pointer" onClick={() => setExpandedId(expandedId === t.id ? null : t.id)}>
-            <p className={`text-sm font-bold ${t.status === 'done' ? 'line-through text-[#A6ADBD]' : ''}`}>{t.title}</p>
-            <p className="text-[10px] text-[#A6ADBD]">{t.priority} · {t.estimateMinutes || 30}m{t.tags.length ? ' · ' + t.tags.map(x => '#' + x).join(' ') : ''}</p>
+            <p className={`text-sm font-bold ${t.status === 'done' ? 'line-through text-[var(--color-muted)]' : ''}`}>{t.title}</p>
+            <p className="text-[10px] text-[var(--color-muted)]">{t.priority} · {t.estimateMinutes || 30}m{t.tags.length ? ' · ' + t.tags.map(x => '#' + x).join(' ') : ''}</p>
           </div>
-          {t.status !== 'done' && <button onClick={() => startFocus(t.id)} className="rounded-xl bg-[#49D17D] px-2.5 py-1.5 text-xs font-black text-[#0B0D14]"><Play size={12} /></button>}
-          <select value={t.status} onChange={e => updateTask(t.id, { status: e.target.value as TaskStatus })} className="rounded-xl bg-white/5 px-2 py-1.5 text-[10px]">
+          {t.status !== 'done' && <button onClick={() => startFocus(t.id)} className="rounded-xl bg-[var(--color-success)] px-2.5 py-1.5 text-xs font-black text-[var(--color-base)]"><Play size={12} /></button>}
+          <select value={t.status} onChange={e => updateTask(t.id, { status: e.target.value as TaskStatus })} className="rounded-xl bg-white/[0.04] px-2 py-1.5 text-[10px]">
             {cols.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <button onClick={() => deleteTask(t.id)} className="rounded-xl bg-red-500/10 p-1.5 text-red-300"><Trash2 size={14} /></button>
@@ -692,15 +692,15 @@ function TasksPage({ state, addTask, updateTask, deleteTask, startFocus, setToas
 
     {/* Board view */}
     {view === 'board' && <div className="grid gap-3 lg:grid-cols-4">{cols.map(col => (
-      <div key={col} className="rounded-3xl border border-white/10 bg-black/20 p-3">
-        <h3 className="sticky top-0 mb-2 rounded-2xl bg-[#11131D] p-2 text-xs font-black capitalize text-[#39D0FF]">{col}</h3>
+      <div key={col} className="rounded-3xl border border-white/[0.08] bg-black/20 p-3">
+        <h3 className="sticky top-0 mb-2 rounded-2xl bg-[var(--color-surface)] p-2 text-xs font-black capitalize text-[var(--verse-cyan)]">{col}</h3>
         <div className="space-y-1.5">{filtered.filter((t: Task) => t.status === col).map((t: Task) => (
           <div key={t.id} className="rounded-xl bg-white/[0.06] p-2.5">
             <p className="text-xs font-bold">{t.title}</p>
-            <p className="text-[9px] text-[#A6ADBD]">{t.priority} · {t.estimateMinutes || 30}m</p>
-            <div className="mt-1.5 flex gap-1"><button onClick={() => updateTask(t.id, { status: cols[Math.min(cols.indexOf(col) + 1, 3)] })} className="rounded-lg bg-[#49D17D] px-2 py-1 text-[9px] font-black text-[#0B0D14]">→</button><button onClick={() => deleteTask(t.id)} className="rounded-lg bg-red-500/10 px-2 py-1 text-red-300"><Trash2 size={10} /></button></div>
+            <p className="text-[9px] text-[var(--color-muted)]">{t.priority} · {t.estimateMinutes || 30}m</p>
+            <div className="mt-1.5 flex gap-1"><button onClick={() => updateTask(t.id, { status: cols[Math.min(cols.indexOf(col) + 1, 3)] })} className="rounded-lg bg-[var(--color-success)] px-2 py-1 text-[9px] font-black text-[var(--color-base)]">→</button><button onClick={() => deleteTask(t.id)} className="rounded-lg bg-red-500/10 px-2 py-1 text-red-300"><Trash2 size={10} /></button></div>
           </div>
-        ))}{filtered.filter((t: Task) => t.status === col).length === 0 && <p className="py-4 text-center text-[10px] text-[#A6ADBD]">Empty</p>}</div>
+        ))}{filtered.filter((t: Task) => t.status === col).length === 0 && <p className="py-4 text-center text-[10px] text-[var(--color-muted)]">Empty</p>}</div>
       </div>
     ))}</div>}
   </Panel></div>;
@@ -743,18 +743,18 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
     const nextTask = state.tasks.find((t: Task) => t.status === 'today' || t.status === 'doing');
     return <div data-page="focus"><Panel title="Focus Cockpit" subtitle="Choose one task and protect the next block of time.">
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-[2rem] border border-[#7C5CFF]/30 bg-[#7C5CFF]/10 p-6 text-center">
-          <p className="text-xs font-black uppercase tracking-wider text-[#39D0FF]">Ready to focus</p>
+        <div className="rounded-[2rem] border border-[var(--verse-violet)]/30 bg-[var(--verse-violet)]/10 p-6 text-center">
+          <p className="text-xs font-black uppercase tracking-wider text-[var(--verse-cyan)]">Ready to focus</p>
           <div className="my-6 text-7xl font-black tracking-[-.08em]">25:00</div>
-          <div className="grid grid-cols-3 gap-2">{[25, 50, 90].map(m => <button key={m} onClick={() => startFocus(undefined, m)} className="rounded-2xl bg-white/10 py-3 font-black hover:bg-white/20">{m}m</button>)}</div>
-          {nextTask && <button onClick={() => startFocus(nextTask.id)} className="mt-4 w-full rounded-2xl bg-[#49D17D] py-4 font-black text-[#0B0D14]">Start focus on: {nextTask.title}</button>}
-          <button onClick={() => startFocus()} className="mt-2 w-full rounded-2xl bg-white/10 py-3 font-black">Start unlinked focus</button>
+          <div className="grid grid-cols-3 gap-2">{[25, 50, 90].map(m => <button key={m} onClick={() => startFocus(undefined, m)} className="rounded-2xl bg-white/[0.08] py-3 font-black hover:bg-white/20">{m}m</button>)}</div>
+          {nextTask && <button onClick={() => startFocus(nextTask.id)} className="mt-4 w-full rounded-2xl bg-[var(--color-success)] py-4 font-black text-[var(--color-base)]">Start focus on: {nextTask.title}</button>}
+          <button onClick={() => startFocus()} className="mt-2 w-full rounded-2xl bg-white/[0.08] py-3 font-black">Start unlinked focus</button>
         </div>
         <div>
           <h3 className="mb-2 text-sm font-black">Recent sessions</h3>
           <div className="space-y-1.5">{recentSessions.length > 0 ? recentSessions.map((s: FocusSession) => {
             const task = s.taskId ? state.tasks.find((t: Task) => t.id === s.taskId) : null;
-            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.status === 'completed' ? 'bg-[#49D17D]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[#A6ADBD]">{s.actualSeconds < 60 ? '<1m' : Math.round(s.actualSeconds / 60) + 'm'} · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
+            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.status === 'completed' ? 'bg-[var(--color-success)]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[var(--color-muted)]">{s.actualSeconds < 60 ? '<1m' : Math.round(s.actualSeconds / 60) + 'm'} · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
           }) : <Empty text="Your focus sessions will appear here." />}</div>
         </div>
       </div>
@@ -767,22 +767,23 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
 
   return <div data-page="focus"><Panel title="Focus Cockpit" subtitle={linkedTask ? `Working on: ${linkedTask.title}` : 'Unlinked focus session'}>
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-      <div className="flex flex-col items-center rounded-[2rem] border border-[#7C5CFF]/30 bg-[#7C5CFF]/10 p-8">
-        <p className="text-xs font-black uppercase tracking-wider text-[#39D0FF]">{timer.mode === 'recovery' ? 'Recovery Sprint' : 'Focused work sprint'}</p>
-        <svg width="140" height="140" viewBox="0 0 120 120" className="my-4 -rotate-90">
-          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-          <circle cx="60" cy="60" r="54" fill="none" stroke="#49D17D" strokeWidth="6" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress)} strokeLinecap="round" />
+      <div className="flex flex-col items-center rounded-[2rem] border border-[var(--verse-violet)]/30 bg-[var(--verse-violet)]/10 p-8">
+        <p className="text-xs font-black uppercase tracking-wider text-[var(--verse-cyan)]">{timer.mode === 'recovery' ? 'Recovery Sprint' : 'Focused work sprint'}</p>
+        <svg width="140" height="140" viewBox="0 0 120 120" className="my-4 -rotate-90 focus-ring-pulse">
+          <defs><linearGradient id="focus-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#7c3aed"/><stop offset="50%" stopColor="#3b82f6"/><stop offset="100%" stopColor="#06b6d4"/></linearGradient></defs>
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+          <circle cx="60" cy="60" r="54" fill="none" stroke="url(#focus-gradient)" strokeWidth="6" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress)} strokeLinecap="round" />
         </svg>
         <p className="text-6xl font-black tracking-[-.08em]">{formatTime(minutes, seconds)}</p>
         <div className="mt-6 grid w-full grid-cols-3 gap-2">
-          {timer.status === 'running' ? <button onClick={pauseFocus} className="rounded-2xl bg-yellow-500 py-4 font-black text-[#0B0D14]"><Pause className="mx-auto" /></button> : <button onClick={resumeFocus} className="rounded-2xl bg-[#49D17D] py-4 font-black text-[#0B0D14]"><Play className="mx-auto" /></button>}
-          <button onClick={() => completeFocus(true)} className="rounded-2xl bg-white/10 py-4 font-black text-xs">Finish early</button>
-          <button onClick={() => { if (confirm('Reset timer?')) { setState((s: AppState) => ({ ...s, activeTimer: null })); document.title = 'Kenshi ShipOS'; } }} className="rounded-2xl bg-white/10 py-4"><RotateCcw className="mx-auto" /></button>
+          {timer.status === 'running' ? <button onClick={pauseFocus} className="rounded-2xl bg-yellow-500 py-4 font-black text-[var(--color-base)]"><Pause className="mx-auto" /></button> : <button onClick={resumeFocus} className="rounded-2xl bg-[var(--color-success)] py-4 font-black text-[var(--color-base)]"><Play className="mx-auto" /></button>}
+          <button onClick={() => completeFocus(true)} className="rounded-2xl bg-white/[0.08] py-4 font-black text-xs">Finish early</button>
+          <button onClick={() => { if (confirm('Reset timer?')) { setState((s: AppState) => ({ ...s, activeTimer: null })); document.title = 'Kenshi ShipOS'; } }} className="rounded-2xl bg-white/[0.08] py-4"><RotateCcw className="mx-auto" /></button>
         </div>
       </div>
 
       <div className="space-y-4">
-        {linkedTask && <div className="rounded-2xl bg-white/[0.05] p-4"><p className="text-[10px] font-bold uppercase text-[#39D0FF]">Linked task</p><p className="mt-1 text-sm font-bold">{linkedTask.title}</p>{linkedTask.notes && <p className="mt-1 text-xs text-[#A6ADBD]">{linkedTask.notes}</p>}</div>}
+        {linkedTask && <div className="rounded-2xl bg-white/[0.05] p-4"><p className="text-[10px] font-bold uppercase text-[var(--verse-cyan)]">Linked task</p><p className="mt-1 text-sm font-bold">{linkedTask.title}</p>{linkedTask.notes && <p className="mt-1 text-xs text-[var(--color-muted)]">{linkedTask.notes}</p>}</div>}
 
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setShowRescue(true)} className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/15 py-3 text-sm font-black text-red-300"><AlertCircle size={16} /> I&apos;m blocked</button>
@@ -790,7 +791,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
         </div>
 
         {/* Distraction inbox */}
-        {state.distractions.length > 0 && <div><p className="mb-1 text-[10px] font-bold uppercase text-[#A6ADBD]">Distraction inbox</p>
+        {state.distractions.length > 0 && <div><p className="mb-1 text-[10px] font-bold uppercase text-[var(--color-muted)]">Distraction inbox</p>
           <div className="space-y-1">{state.distractions.slice(-3).reverse().map((d: Distraction) => (
             <div key={d.id} className="flex items-center gap-2 rounded-xl bg-white/[0.04] px-3 py-2 text-xs">
               <StickyNote size={12} className="text-yellow-400" />
@@ -799,7 +800,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
                 const task = createTaskFromParsed({ title: d.text, priority: 'P1' as Priority, tags: ['distraction'], recurrence: { type: 'none' as const } });
                 setState((s: AppState) => ({ ...s, tasks: [...s.tasks, task], distractions: s.distractions.map(x => x.id === d.id ? { ...x, convertedToTask: true, taskId: task.id } : x) }));
                 setToast('Converted to task');
-              }} className="rounded-lg bg-white/10 px-2 py-1 text-[9px]">To Task</button>
+              }} className="rounded-lg bg-white/[0.08] px-2 py-1 text-[9px]">To Task</button>
             </div>
           ))}</div>
         </div>}
@@ -808,33 +809,33 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
 
     {/* Rescue sheet */}
     {showRescue && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4" onClick={() => setShowRescue(false)}>
-      <div className="w-full max-w-lg rounded-[2rem] border border-white/10 bg-[#11131D] p-6" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-lg rounded-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-6" onClick={e => e.stopPropagation()}>
         <h3 className="text-lg font-black">Focus Rescue</h3>
-        <p className="mt-1 text-sm text-[#A6ADBD]">What stopped you? Capture the blocker and smallest next action.</p>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">What stopped you? Capture the blocker and smallest next action.</p>
         <div className="mt-4 space-y-3">
           <I v={blockerTitle} onChange={setBlockerTitle} placeholder="What stopped you?" />
-          <select value={blockerCategory} onChange={e => setBlockerCategory(e.target.value as BlockerCategory)} className="min-h-11 w-full rounded-2xl bg-white/5 px-4 text-sm">
+          <select value={blockerCategory} onChange={e => setBlockerCategory(e.target.value as BlockerCategory)} className="min-h-11 w-full rounded-2xl bg-white/[0.04] px-4 text-sm">
             <option value="unclear">Unclear next step</option><option value="missing_info">Missing information</option><option value="technical">Technical issue</option>
             <option value="waiting">Waiting on someone</option><option value="low_energy">Low energy</option><option value="interruption">Interruption</option><option value="other">Other</option>
           </select>
           <I v={blockerNextAction} onChange={setBlockerNextAction} placeholder="Smallest next action" />
           <div className="grid grid-cols-2 gap-2">
-            <button onClick={handleRescue} className="rounded-2xl bg-[#7C5CFF] py-3 font-black">Capture blocker</button>
-            <button onClick={() => { startFocus(timer.taskId, 5); setShowRescue(false); setToast('5-minute recovery sprint'); }} className="rounded-2xl bg-[#49D17D] py-3 font-black text-[#0B0D14]">5m recovery sprint</button>
+            <button onClick={handleRescue} className="rounded-2xl bg-[var(--verse-violet)] py-3 font-black">Capture blocker</button>
+            <button onClick={() => { startFocus(timer.taskId, 5); setShowRescue(false); setToast('5-minute recovery sprint'); }} className="rounded-2xl bg-[var(--color-success)] py-3 font-black text-[var(--color-base)]">5m recovery sprint</button>
           </div>
-          <button onClick={() => { completeFocus(true); setShowRescue(false); }} className="w-full rounded-2xl bg-white/5 py-2 text-sm text-[#A6ADBD]">End session honestly</button>
+          <button onClick={() => { completeFocus(true); setShowRescue(false); }} className="w-full rounded-2xl bg-white/[0.04] py-2 text-sm text-[var(--color-muted)]">End session honestly</button>
         </div>
       </div>
     </div>}
 
     {/* Distraction capture */}
     {showDistraction && <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 p-4" onClick={() => setShowDistraction(false)}>
-      <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-[#11131D] p-6" onClick={e => e.stopPropagation()}>
+      <div className="w-full max-w-sm rounded-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-6" onClick={e => e.stopPropagation()}>
         <h3 className="text-lg font-black">Capture distraction</h3>
-        <p className="mt-1 text-xs text-[#A6ADBD]">Save it and return to focus immediately.</p>
+        <p className="mt-1 text-xs text-[var(--color-muted)]">Save it and return to focus immediately.</p>
         <div className="mt-4 space-y-3">
           <I v={distractionText} onChange={setDistractionText} placeholder="Remember to…" />
-          <button onClick={handleCaptureDistraction} className="w-full rounded-2xl bg-[#49D17D] py-3 font-black text-[#0B0D14]">Save & return to focus</button>
+          <button onClick={handleCaptureDistraction} className="w-full rounded-2xl bg-[var(--color-success)] py-3 font-black text-[var(--color-base)]">Save & return to focus</button>
         </div>
       </div>
     </div>}
@@ -852,7 +853,7 @@ function ReviewPage({ state, setState, reviewTab, setReviewTab, copyShipLog, set
 
   return <div className="space-y-4" data-page="review">
     <div className="flex gap-1.5 overflow-x-auto pb-1">
-      {tabs.map(t => <button key={t.id} onClick={() => setReviewTab(t.id)} className={`flex items-center gap-1.5 rounded-2xl px-4 py-2 text-xs font-black ${reviewTab === t.id ? 'bg-[#7C5CFF] text-white' : 'bg-white/5 text-[#A6ADBD]'}`}><t.icon size={14} />{t.label}</button>)}
+      {tabs.map(t => <button key={t.id} onClick={() => setReviewTab(t.id)} className={`flex items-center gap-1.5 rounded-2xl px-4 py-2 text-xs font-black ${reviewTab === t.id ? 'bg-[var(--verse-violet)] text-white' : 'bg-white/[0.04] text-[var(--color-muted)]'}`}><t.icon size={14} />{t.label}</button>)}
     </div>
     {reviewTab === 'ship-log' && <ShipLogPanel state={state} copyShipLog={copyShipLog} setToast={setToast} addEvent={addEvent} />}
     {reviewTab === 'blockers' && <BlockersPanel state={state} setState={setState} addEvent={addEvent} />}
@@ -869,12 +870,12 @@ function ShipLogPanel({ state, copyShipLog, setToast, addEvent }: any) {
 
   return <Panel title="Ship Log" subtitle="Your report will build itself as you work.">
     <div className="mb-3 flex flex-wrap gap-2">
-      {(['today', 'week'] as const).map(r => <button key={r} onClick={() => setRange(r)} className={`rounded-2xl px-4 py-2 text-xs font-black ${range === r ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>{r === 'today' ? 'Today' : 'This Week'}</button>)}
-      {(['markdown', 'daily', 'standup'] as const).map(f => <button key={f} onClick={() => setFormat(f)} className={`rounded-2xl px-3 py-2 text-xs font-black ${format === f ? 'bg-[#39D0FF] text-[#0B0D14]' : 'bg-white/5'}`}>{f}</button>)}
-      <button onClick={copyShipLog} className="rounded-2xl bg-[#49D17D] px-4 py-2 text-xs font-black text-[#0B0D14]"><Copy size={14} className="mr-1 inline" />Copy</button>
-      <button onClick={download} className="rounded-2xl bg-white/10 px-4 py-2 text-xs font-black"><Download size={14} className="mr-1 inline" />.md</button>
+      {(['today', 'week'] as const).map(r => <button key={r} onClick={() => setRange(r)} className={`rounded-2xl px-4 py-2 text-xs font-black ${range === r ? 'bg-[var(--verse-violet)]' : 'bg-white/[0.04]'}`}>{r === 'today' ? 'Today' : 'This Week'}</button>)}
+      {(['markdown', 'daily', 'standup'] as const).map(f => <button key={f} onClick={() => setFormat(f)} className={`rounded-2xl px-3 py-2 text-xs font-black ${format === f ? 'bg-[var(--verse-cyan)] text-[var(--color-base)]' : 'bg-white/[0.04]'}`}>{f}</button>)}
+      <button onClick={copyShipLog} className="rounded-2xl bg-[var(--color-success)] px-4 py-2 text-xs font-black text-[var(--color-base)]"><Copy size={14} className="mr-1 inline" />Copy</button>
+      <button onClick={download} className="rounded-2xl bg-white/[0.08] px-4 py-2 text-xs font-black"><Download size={14} className="mr-1 inline" />.md</button>
     </div>
-    <pre className="max-h-[60svh] overflow-auto whitespace-pre-wrap rounded-3xl bg-black/35 p-4 text-sm leading-6 text-[#DDE7FF]">{text}</pre>
+    <pre className="max-h-[60svh] overflow-auto whitespace-pre-wrap rounded-3xl bg-black/35 p-4 text-sm leading-6 text-[var(--color-text)]">{text}</pre>
   </Panel>;
 }
 
@@ -887,13 +888,13 @@ function BlockersPanel({ state, setState, addEvent }: any) {
   const resolve = (id: string) => { setState((s: AppState) => ({ ...s, blockers: s.blockers.map(b => b.id === id ? { ...b, status: 'resolved', resolvedAt: Date.now(), resolveNote: 'Resolved' } : b) })); addEvent('blocker_resolved', 'Resolved'); };
 
   return <Panel title="Blockers" subtitle="Nothing is blocking you right now.">
-    <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]"><I v={title} onChange={setTitle} placeholder="What is blocking the ship?" /><select value={severity} onChange={e => setSeverity(e.target.value as Severity)} className="min-h-11 rounded-2xl bg-white/5 px-3 text-sm"><option value="low">Low</option><option value="med">Med</option><option value="high">High</option></select><select value={category} onChange={e => setCategory(e.target.value as BlockerCategory)} className="min-h-11 rounded-2xl bg-white/5 px-3 text-sm"><option value="other">Other</option><option value="unclear">Unclear</option><option value="technical">Technical</option><option value="waiting">Waiting</option><option value="low_energy">Low energy</option></select><button onClick={add} className="rounded-2xl bg-[#7C5CFF] px-5 font-black">Add</button></div>
+    <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]"><I v={title} onChange={setTitle} placeholder="What is blocking the ship?" /><select value={severity} onChange={e => setSeverity(e.target.value as Severity)} className="min-h-11 rounded-2xl bg-white/[0.04] px-3 text-sm"><option value="low">Low</option><option value="med">Med</option><option value="high">High</option></select><select value={category} onChange={e => setCategory(e.target.value as BlockerCategory)} className="min-h-11 rounded-2xl bg-white/[0.04] px-3 text-sm"><option value="other">Other</option><option value="unclear">Unclear</option><option value="technical">Technical</option><option value="waiting">Waiting</option><option value="low_energy">Low energy</option></select><button onClick={add} className="rounded-2xl bg-[var(--verse-violet)] px-5 font-black">Add</button></div>
     <div className="mt-4 grid gap-2 md:grid-cols-2">
       {state.blockers.map((b: Blocker) => <article key={b.id} className="rounded-2xl bg-white/[0.04] p-4">
         <div className="flex justify-between gap-2"><b className="text-sm">{b.title}</b><span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${b.severity === 'high' ? 'bg-red-500/20 text-red-300' : b.severity === 'med' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-500/20 text-green-300'}`}>{b.severity}</span></div>
-        <p className="mt-1 text-[10px] text-[#A6ADBD]">{b.category} · Age: {Math.max(0, Math.floor((Date.now() - b.createdAt) / 3600000))}h · {b.status}</p>
-        {b.nextAction && <p className="mt-1 text-xs text-[#39D0FF]">Next: {b.nextAction}</p>}
-        {b.status === 'open' ? <button onClick={() => resolve(b.id)} className="mt-2 rounded-xl bg-[#49D17D] px-3 py-1.5 text-xs font-black text-[#0B0D14]">Resolve</button> : <p className="mt-2 text-xs text-[#49D17D]">Resolved ✓ {b.resolveNote}</p>}
+        <p className="mt-1 text-[10px] text-[var(--color-muted)]">{b.category} · Age: {Math.max(0, Math.floor((Date.now() - b.createdAt) / 3600000))}h · {b.status}</p>
+        {b.nextAction && <p className="mt-1 text-xs text-[var(--verse-cyan)]">Next: {b.nextAction}</p>}
+        {b.status === 'open' ? <button onClick={() => resolve(b.id)} className="mt-2 rounded-xl bg-[var(--color-success)] px-3 py-1.5 text-xs font-black text-[var(--color-base)]">Resolve</button> : <p className="mt-2 text-xs text-[#49D17D]">Resolved ✓ {b.resolveNote}</p>}
       </article>)}
       {state.blockers.length === 0 && <Empty text="Nothing is blocking you right now." />}
     </div>
@@ -907,8 +908,8 @@ function DecisionsPanel({ state, setState, addEvent }: any) {
   const add = () => { if (!title.trim()) return; setState((s: AppState) => ({ ...s, decisions: [...s.decisions, { id: uid(), title, context, decision, expectedImpact: '', tags: [], date: Date.now() }] })); addEvent('decision_recorded', title); setTitle(''); setContext(''); setDecision(''); };
 
   return <Panel title="Decisions" subtitle="Searchable records: title, context, decision.">
-    <div className="grid gap-2 sm:grid-cols-2"><I v={title} onChange={setTitle} placeholder="Decision title" /><I v={context} onChange={setContext} placeholder="Context" /><TA v={decision} onChange={setDecision} placeholder="Decision" rows={2} /><button onClick={add} className="rounded-2xl bg-[#7C5CFF] font-black">Log decision</button></div>
-    <div className="mt-4 space-y-2">{state.decisions.slice().reverse().map((d: Decision) => <article key={d.id} className="rounded-2xl bg-white/[0.04] p-4"><b className="text-sm">{d.title}</b><p className="mt-1 text-xs text-[#A6ADBD]">{d.context}</p><p className="mt-1 text-sm text-[#39D0FF]">{d.decision}</p><p className="mt-1 text-[10px] text-[#A6ADBD]">{new Date(d.date).toLocaleString()}</p></article>)}{state.decisions.length === 0 && <Empty text="No decisions yet." />}</div>
+    <div className="grid gap-2 sm:grid-cols-2"><I v={title} onChange={setTitle} placeholder="Decision title" /><I v={context} onChange={setContext} placeholder="Context" /><TA v={decision} onChange={setDecision} placeholder="Decision" rows={2} /><button onClick={add} className="rounded-2xl bg-[var(--verse-violet)] font-black">Log decision</button></div>
+    <div className="mt-4 space-y-2">{state.decisions.slice().reverse().map((d: Decision) => <article key={d.id} className="rounded-2xl bg-white/[0.04] p-4"><b className="text-sm">{d.title}</b><p className="mt-1 text-xs text-[var(--color-muted)]">{d.context}</p><p className="mt-1 text-sm text-[var(--verse-cyan)]">{d.decision}</p><p className="mt-1 text-[10px] text-[var(--color-muted)]">{new Date(d.date).toLocaleString()}</p></article>)}{state.decisions.length === 0 && <Empty text="No decisions yet." />}</div>
   </Panel>;
 }
 
@@ -920,12 +921,12 @@ function NotesPanel({ state, setState, setToast }: any) {
   const filtered = state.notes.filter((n: Note) => (n.title + n.body + n.tags.join(' ')).toLowerCase().includes(search.toLowerCase())).sort((a: Note, b: Note) => Number(b.favorite) - Number(a.favorite));
 
   return <Panel title="Notes" subtitle="Reusable instructions, notes, prompts, and templates.">
-    <div className="grid gap-2 sm:grid-cols-3"><I v={search} onChange={setSearch} placeholder="Search notes" /><I v={title} onChange={setTitle} placeholder="Title" /><button onClick={add} className="rounded-2xl bg-[#7C5CFF] font-black">Add</button></div>
+    <div className="grid gap-2 sm:grid-cols-3"><I v={search} onChange={setSearch} placeholder="Search notes" /><I v={title} onChange={setTitle} placeholder="Title" /><button onClick={add} className="rounded-2xl bg-[var(--verse-violet)] font-black">Add</button></div>
     <div className="mt-2"><TA v={body} onChange={setBody} placeholder="Body" rows={2} /></div>
     <div className="mt-4 grid gap-2 md:grid-cols-2">{filtered.map((n: Note) => <article key={n.id} className="rounded-2xl bg-white/[0.04] p-4">
       <div className="flex justify-between gap-2"><b className="text-sm">{n.title}</b><button onClick={() => setState((s: AppState) => ({ ...s, notes: s.notes.map(x => x.id === n.id ? { ...x, favorite: !x.favorite } : x) }))} className="text-lg">{n.favorite ? '★' : '☆'}</button></div>
-      <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-xs text-[#A6ADBD]">{n.body}</p>
-      <button onClick={() => navigator.clipboard.writeText(n.body).then(() => setToast('Copied'))} className="mt-2 rounded-xl bg-[#49D17D] px-3 py-1.5 text-[10px] font-black text-[#0B0D14]"><Copy size={12} className="mr-1 inline" />Copy</button>
+      <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-xs text-[var(--color-muted)]">{n.body}</p>
+      <button onClick={() => navigator.clipboard.writeText(n.body).then(() => setToast('Copied'))} className="mt-2 rounded-xl bg-[var(--color-success)] px-3 py-1.5 text-[10px] font-black text-[var(--color-base)]"><Copy size={12} className="mr-1 inline" />Copy</button>
     </article>)}{filtered.length === 0 && <Empty text="No notes yet." />}</div>
   </Panel>;
 }
@@ -950,7 +951,7 @@ function InsightsPage({ state, momentum }: { state: AppState; momentum: Momentum
     <Panel title="Insights" subtitle="Real trends appear after a few sessions.">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><StatPill label="Momentum" value={momentum.total} /><StatPill label="Done today" value={doneToday} /><StatPill label="Focus today" value={`${focusToday}m`} /><StatPill label="Resolved" value={resolved} /></div>
       <div className="mt-6 rounded-3xl bg-white/[0.03] p-4"><p className="mb-3 text-xs font-black">Weekly activity</p>
-        <div className="flex h-32 items-end gap-2">{days.map(d => <div key={d.key} className="flex flex-1 flex-col items-center gap-1"><div className="w-full rounded-t-xl bg-gradient-to-t from-[#7C5CFF] to-[#39D0FF]" style={{ height: `${Math.max(4, Math.min(100, d.score))}%` }} /><span className="text-[9px] text-[#A6ADBD]">{d.key.slice(5)}</span></div>)}</div>
+        <div className="flex h-32 items-end gap-2">{days.map(d => <div key={d.key} className="flex flex-1 flex-col items-center gap-1"><div className="w-full rounded-t-xl bg-gradient-to-t from-[#7C5CFF] to-[#39D0FF]" style={{ height: `${Math.max(4, Math.min(100, d.score))}%` }} /><span className="text-[9px] text-[var(--color-muted)]">{d.key.slice(5)}</span></div>)}</div>
       </div>
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
         <StatPill label="Focus week" value={`${days.reduce((a, d) => a + d.focus, 0)}m`} />
@@ -968,22 +969,22 @@ function SettingsPage({ state, setState, setToast, sampleWorkspace, onLoadSample
   const exportJson = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })); a.download = `shipos-export-${today()}.json`; a.click(); };
   const importJson = (file: File) => { const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(String(r.result)); if (d.v === 5) { setState(d); setToast('Import complete'); } else if (d.v === 2 || d.v === 3) { setState(migrateV3toV5(d)); setToast('Migrated and imported'); } else setToast('Invalid export'); } catch { setToast('Invalid JSON'); } }; r.readAsText(file); };
 
-  return <div data-page="settings"><Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences." action={<div className="text-right text-[10px] text-[#A6ADBD]"><p>Build: {process.env.NEXT_PUBLIC_BUILD_SHA || 'local'}</p><p>{process.env.NEXT_PUBLIC_BUILD_TIME || ''}</p></div>}>
+  return <div data-page="settings"><Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences." action={<div className="text-right text-[10px] text-[var(--color-muted)]"><p>Build: {process.env.NEXT_PUBLIC_BUILD_SHA || 'local'}</p><p>{process.env.NEXT_PUBLIC_BUILD_TIME || ''}</p></div>}>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <button onClick={onReopenOnboarding} className="rounded-2xl bg-[#49D17D] px-4 py-4 font-black text-[#0B0D14]">Reopen onboarding</button>
-      <button onClick={onLoadSample} className="rounded-2xl bg-[#39D0FF]/15 px-4 py-4 font-black text-[#39D0FF]">Explore sample workspace</button>
+      <button onClick={onReopenOnboarding} className="rounded-2xl bg-[var(--color-success)] px-4 py-4 font-black text-[var(--color-base)]">Reopen onboarding</button>
+      <button onClick={onLoadSample} className="rounded-2xl bg-[var(--verse-cyan)]/15 px-4 py-4 font-black text-[var(--verse-cyan)]">Explore sample workspace</button>
       {sampleWorkspace && <button onClick={() => confirm('Clear sample and start fresh?') && onStartFresh()} className="rounded-2xl bg-yellow-500/15 px-4 py-4 font-black text-yellow-200">Clear sample & start fresh</button>}
-      <button onClick={exportJson} className="rounded-2xl bg-[#7C5CFF] px-4 py-4 font-black"><Download className="mr-2 inline" />Export JSON</button>
-      <label className="flex cursor-pointer items-center justify-center rounded-2xl bg-white/10 px-4 py-4 font-black"><Upload className="mr-2" />Import JSON<input type="file" accept="application/json" className="hidden" onChange={e => e.target.files?.[0] && importJson(e.target.files[0])} /></label>
+      <button onClick={exportJson} className="rounded-2xl bg-[var(--verse-violet)] px-4 py-4 font-black"><Download className="mr-2 inline" />Export JSON</button>
+      <label className="flex cursor-pointer items-center justify-center rounded-2xl bg-white/[0.08] px-4 py-4 font-black"><Upload className="mr-2" />Import JSON<input type="file" accept="application/json" className="hidden" onChange={e => e.target.files?.[0] && importJson(e.target.files[0])} /></label>
       <button onClick={() => confirm('Reset all ShipOS data?') && onStartFresh()} className="rounded-2xl bg-red-500/20 px-4 py-4 font-black text-red-300"><Trash2 className="mr-2 inline" />Reset all data</button>
     </div>
     <div className="mt-4 grid gap-3 sm:grid-cols-2">
-      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Theme</label>
-        <div className="flex gap-1">{(['dark', 'light', 'system'] as const).map(t => <button key={t} onClick={() => updateSettings({ theme: t })} className={`flex-1 rounded-xl py-2 text-xs font-black capitalize ${state.settings.theme === t ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>{t}</button>)}</div>
+      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Theme</label>
+        <div className="flex gap-1">{(['dark', 'light', 'system'] as const).map(t => <button key={t} onClick={() => updateSettings({ theme: t })} className={`flex-1 rounded-xl py-2 text-xs font-black capitalize ${state.settings.theme === t ? 'bg-[var(--verse-violet)]' : 'bg-white/[0.04]'}`}>{t}</button>)}</div>
       </div>
-      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Daily focus goal (minutes)</label><I v={String(state.settings.dailyFocusGoal)} onChange={(v: string) => updateSettings({ dailyFocusGoal: parseInt(v) || 120 })} type="number" /></div>
-      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[#A6ADBD]">Default focus preset</label>
-        <div className="flex gap-1">{[25, 50, 90].map(m => <button key={m} onClick={() => updateSettings({ defaultFocusPreset: m })} className={`flex-1 rounded-xl py-2 text-xs font-black ${state.settings.defaultFocusPreset === m ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>{m}m</button>)}</div>
+      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Daily focus goal (minutes)</label><I v={String(state.settings.dailyFocusGoal)} onChange={(v: string) => updateSettings({ dailyFocusGoal: parseInt(v) || 120 })} type="number" /></div>
+      <div><label className="mb-1 block text-[10px] font-bold uppercase text-[var(--color-muted)]">Default focus preset</label>
+        <div className="flex gap-1">{[25, 50, 90].map(m => <button key={m} onClick={() => updateSettings({ defaultFocusPreset: m })} className={`flex-1 rounded-xl py-2 text-xs font-black ${state.settings.defaultFocusPreset === m ? 'bg-[var(--verse-violet)]' : 'bg-white/[0.04]'}`}>{m}m</button>)}</div>
       </div>
     </div>
   </Panel></div>;
@@ -1010,34 +1011,34 @@ function Onboarding({ current, onFinish }: { current: AppState; onFinish: (next?
 
   return <div className="fixed inset-0 z-[90] overflow-y-auto bg-[#080A11]/98 px-4 py-6 text-white backdrop-blur-xl" role="dialog" aria-modal="true">
     <div className="mx-auto flex min-h-full max-w-2xl items-center">
-      <section className="w-full rounded-[2rem] border border-white/10 bg-[#11131D] p-5 shadow-2xl sm:p-8">
+      <section className="w-full rounded-[2rem] border border-white/[0.08] bg-[var(--color-surface)] p-5 shadow-2xl sm:p-8">
         <div className="mb-6 flex items-center justify-between">
-          <span className="text-xs font-black uppercase tracking-[.2em] text-[#39D0FF]">ShipOS setup · {step}/3</span>
-          <div className="flex gap-1">{[1, 2, 3].map(i => <span key={i} className={`h-1.5 w-10 rounded-full ${i <= step ? 'bg-[#49D17D]' : 'bg-white/10'}`} />)}</div>
+          <span className="text-xs font-black uppercase tracking-[.2em] text-[var(--verse-cyan)]">ShipOS setup · {step}/3</span>
+          <div className="flex gap-1">{[1, 2, 3].map(i => <span key={i} className={`h-1.5 w-10 rounded-full ${i <= step ? 'bg-[var(--color-success)]' : 'bg-white/[0.08]'}`} />)}</div>
         </div>
 
         {step === 1 && <div>
           <h2 className="font-heading text-4xl font-black tracking-[-.05em] sm:text-5xl">Turn a realistic plan into shipped work.</h2>
-          <p className="mt-4 text-lg leading-8 text-[#A6ADBD]">ShipOS helps you choose what fits today, focus without losing context, recover from blockers, and generate your progress update.</p>
-          <button onClick={() => setStep(2)} className="mt-8 min-h-12 w-full rounded-2xl bg-[#49D17D] px-5 font-black text-[#0B0D14]">Plan my day</button>
+          <p className="mt-4 text-lg leading-8 text-[var(--color-muted)]">ShipOS helps you choose what fits today, focus without losing context, recover from blockers, and generate your progress update.</p>
+          <button onClick={() => setStep(2)} className="mt-8 min-h-12 w-full rounded-2xl bg-[var(--color-success)] px-5 font-black text-[var(--color-base)]">Plan my day</button>
         </div>}
 
         {step === 2 && <div>
           <h2 className="font-heading text-3xl font-black">Choose your starting point</h2>
           <div className="mt-5 grid gap-3">
-            <button onClick={() => { setChoice('fresh'); setStep(3); }} className="min-h-16 rounded-2xl border border-[#49D17D]/40 bg-[#49D17D]/10 px-5 text-left"><b>Start fresh</b><p className="mt-1 text-sm text-[#A6ADBD]">A clean local-first workspace. No account required.</p></button>
-            <button onClick={() => { setChoice('sample'); setStep(3); }} className="min-h-16 rounded-2xl border border-[#39D0FF]/30 bg-[#39D0FF]/10 px-5 text-left"><b>Explore sample workspace</b><p className="mt-1 text-sm text-[#A6ADBD]">See every feature with a coherent shipping day.</p></button>
-            <button onClick={() => alert('Google cross-device sync is coming soon. Guest mode remains fully functional.')} className="min-h-16 rounded-2xl border border-white/10 bg-white/5 px-5 text-left"><b>Continue with Google</b><p className="mt-1 text-sm text-[#A6ADBD]">Coming soon — guest mode remains fully functional.</p></button>
+            <button onClick={() => { setChoice('fresh'); setStep(3); }} className="min-h-16 rounded-2xl border border-[#49D17D]/40 bg-[var(--color-success)]/10 px-5 text-left"><b>Start fresh</b><p className="mt-1 text-sm text-[var(--color-muted)]">A clean local-first workspace. No account required.</p></button>
+            <button onClick={() => { setChoice('sample'); setStep(3); }} className="min-h-16 rounded-2xl border border-[var(--verse-cyan)]/30 bg-[var(--verse-cyan)]/10 px-5 text-left"><b>Explore sample workspace</b><p className="mt-1 text-sm text-[var(--color-muted)]">See every feature with a coherent shipping day.</p></button>
+            <button onClick={() => alert('Google cross-device sync is coming soon. Guest mode remains fully functional.')} className="min-h-16 rounded-2xl border border-white/[0.08] bg-white/[0.04] px-5 text-left"><b>Continue with Google</b><p className="mt-1 text-sm text-[var(--color-muted)]">Coming soon — guest mode remains fully functional.</p></button>
           </div>
         </div>}
 
         {step === 3 && <div>
           <h2 className="font-heading text-3xl font-black">Quick setup</h2>
           <div className="mt-5 space-y-4">
-            <div><label className="mb-1 block text-xs font-bold text-[#A6ADBD]">What must ship today?</label><I v={intention} onChange={setIntention} placeholder="Your mission for today" /></div>
-            <div><label className="mb-1 block text-xs font-bold text-[#A6ADBD]">Available work minutes</label><I v={availableMin} onChange={setAvailableMin} type="number" placeholder="120" /></div>
-            <button onClick={complete} className="min-h-12 w-full rounded-2xl bg-[#49D17D] px-5 font-black text-[#0B0D14]">{choice === 'sample' ? 'Load sample workspace' : 'Start working'}</button>
-            <button onClick={() => { onFinish(); }} className="w-full text-center text-sm text-[#A6ADBD] hover:text-white">Skip setup</button>
+            <div><label className="mb-1 block text-xs font-bold text-[var(--color-muted)]">What must ship today?</label><I v={intention} onChange={setIntention} placeholder="Your mission for today" /></div>
+            <div><label className="mb-1 block text-xs font-bold text-[var(--color-muted)]">Available work minutes</label><I v={availableMin} onChange={setAvailableMin} type="number" placeholder="120" /></div>
+            <button onClick={complete} className="min-h-12 w-full rounded-2xl bg-[var(--color-success)] px-5 font-black text-[var(--color-base)]">{choice === 'sample' ? 'Load sample workspace' : 'Start working'}</button>
+            <button onClick={() => { onFinish(); }} className="w-full text-center text-sm text-[var(--color-muted)] hover:text-white">Skip setup</button>
           </div>
         </div>}
       </section>
@@ -1062,9 +1063,9 @@ function CommandPalette({ onClose, go, addTask, startFocus, addBlocker, captureD
   useEffect(() => { const close = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); window.addEventListener('keydown', close); return () => window.removeEventListener('keydown', close); }, [onClose]);
 
   return <div className="fixed inset-0 z-[85] bg-black/70 px-4 pt-[10vh] backdrop-blur-sm" onClick={onClose} role="dialog" aria-modal="true" aria-label="Command palette">
-    <section className="mx-auto max-w-xl overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#11131D] shadow-2xl" onClick={e => e.stopPropagation()}>
-      <div className="flex items-center gap-3 border-b border-white/10 p-4"><Search size={18} /><input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder="Search commands…" className="min-h-11 flex-1 bg-transparent text-base outline-none" /><button onClick={onClose} className="rounded-xl bg-white/10 p-2"><X size={18} /></button></div>
-      <div className="max-h-[60vh] overflow-y-auto p-2">{commands.map(c => <button key={c.label} onClick={c.run} className="flex min-h-12 w-full items-center justify-between rounded-xl px-3 text-left font-bold hover:bg-white/10 focus:bg-white/10"><span>{c.label}</span>{!!c.detail && <span className="text-xs text-[#A6ADBD]">{c.detail}</span>}</button>)}{!commands.length && <Empty text="No matching command." />}</div>
+    <section className="mx-auto max-w-xl overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-[var(--color-surface)] shadow-2xl" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center gap-3 border-b border-white/[0.08] p-4"><Search size={18} /><input autoFocus value={query} onChange={e => setQuery(e.target.value)} placeholder="Search commands…" className="min-h-11 flex-1 bg-transparent text-base outline-none" /><button onClick={onClose} className="rounded-xl bg-white/[0.08] p-2"><X size={18} /></button></div>
+      <div className="max-h-[60vh] overflow-y-auto p-2">{commands.map(c => <button key={c.label} onClick={c.run} className="flex min-h-12 w-full items-center justify-between rounded-xl px-3 text-left font-bold hover:bg-white/[0.08] focus:bg-white/[0.08]"><span>{c.label}</span>{!!c.detail && <span className="text-xs text-[var(--color-muted)]">{c.detail}</span>}</button>)}{!commands.length && <Empty text="No matching command." />}</div>
     </section>
   </div>;
 }

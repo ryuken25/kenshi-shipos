@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description:
     "A daily execution workspace for realistic planning, focused work, blocker recovery, and automatic progress reports.",
   manifest: "/manifest.webmanifest",
+  alternates: { canonical: "/" },
+  icons: {
+    icon: "/brand/verse/verse-logo.svg",
+    apple: "/brand/verse/verse-logo.png",
+  },
   openGraph: {
     type: "website",
     url: "https://kenshi-shipos.vercel.app",
@@ -17,12 +22,20 @@ export const metadata: Metadata = {
     description:
       "Plan what fits, focus on one task, recover when blocked, and show what you shipped.",
     siteName: "Kenshi ShipOS",
+    images: ["/brand/verse/verse-logo.png"],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kenshi ShipOS",
+    description:
+      "Plan what fits, focus on one task, recover when blocked, and show what you shipped.",
+  },
+  other: { "theme-color": "#0a0e27" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <head>
         <script
           defer
@@ -30,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src="https://analytics.vgdh.io/js/script.js"
         ></script>
       </head>
-      <body className="min-h-screen bg-[#0B0D14] text-[#F6F7FB] antialiased">
+      <body className="min-h-screen bg-[var(--color-base)] text-[var(--color-text)] antialiased">
         {children}
       </body>
     </html>

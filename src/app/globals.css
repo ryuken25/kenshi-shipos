@@ -4,19 +4,57 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── VERSE Design System — ShipOS v11 ───────────────────── */
 :root {
-  --color-base: #0B0D14;
-  --color-surface: #11131D;
-  --color-panel: #171923;
-  --color-panel-soft: #202331;
-  --color-panel-hover: #292D3D;
-  --color-verse-purple: #7C5CFF;
-  --color-verse-blue: #39D0FF;
-  --color-success: #49D17D;
-  --color-warning: #FFD166;
-  --color-danger: #FF5C7A;
-  --color-text: #F6F7FB;
-  --color-muted: #A6ADBD;
+  /* Base — dark navy */
+  --color-base: #0a0e27;
+  --color-surface: #0f1330;
+  --color-panel: #151a3a;
+  --color-panel-soft: #1b2044;
+  --color-panel-hover: #222854;
+
+  /* VERSE brand gradient */
+  --verse-violet: #7c3aed;
+  --verse-blue: #3b82f6;
+  --verse-cyan: #06b6d4;
+  --verse-magenta: #d946ef;
+
+  /* Functional palette */
+  --color-primary: #7c3aed;
+  --color-accent: #06b6d4;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f43f5e;
+
+  /* Text */
+  --color-text: #f0f1f7;
+  --color-muted: #8b92a8;
+  --color-dim: #5c6380;
+
+  /* Gradient tokens */
+  --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
+  --gradient-accent: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%);
+  --gradient-warm: linear-gradient(135deg, #d946ef 0%, #7c3aed 50%, #3b82f6 100%);
+
+  /* Glass */
+  --glass-bg: rgba(15, 19, 48, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(124, 58, 237, 0.12);
+}
+
+/* ── Light theme ────────────────────────────────────────── */
+[data-theme="light"] {
+  --color-base: #f8f9fc;
+  --color-surface: #ffffff;
+  --color-panel: #f0f1f7;
+  --color-panel-soft: #e8eaf2;
+  --color-panel-hover: #dddee8;
+  --color-text: #1a1d2e;
+  --color-muted: #6b7280;
+  --color-dim: #9ca3af;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-highlight: rgba(124, 58, 237, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -40,13 +78,79 @@ button, a, [role="button"], input, select, textarea { touch-action: manipulation
 pre, code { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
 * { min-width: 0; }
 
+/* ── Glass components ───────────────────────────────────── */
 .glass-panel {
-  background: rgba(23, 25, 35, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
   border-radius: 1rem;
 }
 
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.glass-card:hover {
+  border-color: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.06);
+}
+
+/* ── Gradient utilities ─────────────────────────────────── */
+.gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-border {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: var(--gradient-primary);
+  z-index: -1;
+  opacity: 0.3;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+}
+
+/* ── Focus ring animation ───────────────────────────────── */
+@keyframes focus-ring-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.focus-ring-pulse {
+  animation: focus-ring-pulse 2s ease-in-out infinite;
+}
+
+/* ── Momentum ring ──────────────────────────────────────── */
+@keyframes momentum-glow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(124, 58, 237, 0.3)); }
+  50% { filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.4)); }
+}
+.momentum-ring {
+  animation: momentum-glow 3s ease-in-out infinite;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Print styles ───────────────────────────────────────── */
+@media print {
+  nav, header, footer, [role="navigation"], .glass-panel { display: none !important; }
+  body { background: white; color: black; }
+}
