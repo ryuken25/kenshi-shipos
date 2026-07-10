@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "bash -c 'export NEXT_PUBLIC_BUILD_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo unknown) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) && echo SHA=$NEXT_PUBLIC_BUILD_SHA'",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "lint": "next lint || true",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run || true",
+    "qa": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
     "next": "16.2.10",

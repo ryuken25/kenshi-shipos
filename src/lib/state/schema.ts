@@ -45,9 +45,11 @@ export interface FocusSession {
   mode: 'focus' | 'break' | 'recovery';
   plannedMinutes: number;
   actualMinutes: number;
+  actualSeconds?: number;
   startedAt: number;
   endedAt?: number;
   completed: boolean;
+  status?: 'completed' | 'ended_early' | 'cancelled';
 }
 
 export interface ActiveTimer {

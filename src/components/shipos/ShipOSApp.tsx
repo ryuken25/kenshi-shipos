@@ -18,12 +18,13 @@ import { calcMomentum, type MomentumBreakdown } from '@/lib/momentum';
 import { generateShipLog } from '@/lib/ship-log';
 import { createTimer, getRemainingMs, getDisplayTime, pauseTimer, resumeTimer, isTimerComplete, formatTime } from '@/lib/timer';
 import { parseQuickCapture, createTaskFromParsed, type ParsedTask } from '@/lib/task-parser';
+import { toLocalDateKey, greeting, localDateKeyFromTs, isToday as isTodayDate } from '@/lib/dates/localDate';
 
 /* ── Types ────────────────────────────────────────────────── */
 type Tab = 'today' | 'tasks' | 'focus' | 'review' | 'insights' | 'settings';
 type ReviewTab = 'ship-log' | 'blockers' | 'decisions' | 'notes';
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toLocalDateKey();
 const uid = () => Math.random().toString(36).slice(2, 10);
 const safeTags = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean).slice(0, 8);
 
@@ -56,10 +57,7 @@ function defaultState(): AppState {
     v: 5,
     mission: { date: today(), title: '', why: '', status: 'planned', availableMinutes: 120, energy: 'normal', top3: [], desiredFinishTime: '' },
     tasks: [], focusSessions: [], activeTimer: null,
-    blockers: [], distractions: [], decisions: [], notes: [
-      { id: 'n1', title: 'Responsive QA Prompt', body: 'Test 320/360/390/430/768/1024/1280/1440/1920 widths. Fix overlap, horizontal overflow, clipped modals, and tap-target issues.', type: 'prompt', tags: ['qa', 'mobile'], favorite: true, createdAt: Date.now(), updatedAt: Date.now() },
-      { id: 'n2', title: 'Deploy Guard Prompt', body: 'Run build, verify env requirements, deploy prebuilt if remote npm fails, confirm live URL HTTP 200 and title. Never claim done without output.', type: 'prompt', tags: ['deploy'], favorite: false, createdAt: Date.now(), updatedAt: Date.now() },
-    ],
+    blockers: [], distractions: [], decisions: [], notes: [],
     shipLogs: [], events: [], dailyPlans: [],
     settings: { theme: 'dark', dailyFocusGoal: 120, defaultFocusPreset: 25, soundEnabled: false, showScore: true, startHour: 9, endHour: 17 },
   };
@@ -122,6 +120,10 @@ export default function ShipOSApp() {
   const [sampleWorkspace, setSampleWorkspace] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [focusStartToken, setFocusStartToken] = useState(0);
+  const [quickTaskOpen, setQuickTaskOpen] = useState(false);
+  const [quickBlockerOpen, setQuickBlockerOpen] = useState(false);
+  const [quickTaskTitle, setQuickTaskTitle] = useState('');
+  const [undoAction, setUndoAction] = useState<{label: string; undo: () => void} | null>(null);
 
   // Init
   useEffect(() => {
@@ -197,31 +199,30 @@ export default function ShipOSApp() {
   }
 
   function quickAddTask() {
-    const title = window.prompt('New task (supports !p0 #tag 30m tomorrow)');
-    if (!title?.trim()) return;
-    const parsed = parseQuickCapture(title);
+    setQuickTaskOpen(true);
+    setQuickTaskTitle('');
+  }
+
+  function submitQuickTask() {
+    if (!quickTaskTitle.trim()) return;
+    const parsed = parseQuickCapture(quickTaskTitle);
     if (parsed) {
       const task = createTaskFromParsed(parsed);
       setState(s => ({ ...s, tasks: [...s.tasks, task] }));
       addEvent('task_added', task.title);
       setToast('Task added');
     }
+    setQuickTaskOpen(false);
+    setQuickTaskTitle('');
   }
 
   function quickAddBlocker() {
-    const title = window.prompt('What is blocking the ship?');
-    if (!title?.trim()) return;
-    setState(s => ({ ...s, blockers: [...s.blockers, { id: uid(), title: title.trim(), severity: 'med', category: 'other', status: 'open', note: '', nextAction: '', createdAt: Date.now() }] }));
-    addEvent('blocker_created', title.trim());
-    setToast('Blocker added');
+    setQuickBlockerOpen(true);
   }
 
   function quickCaptureDistraction() {
-    const text = window.prompt('Capture distraction — return to focus after:');
-    if (!text?.trim()) return;
-    setState(s => ({ ...s, distractions: [...s.distractions, { id: uid(), text: text.trim(), capturedAt: Date.now(), convertedToTask: false }] }));
-    addEvent('distraction_captured', text.trim());
-    setToast('Captured — back to focus');
+    // Handled inline in FocusPage via showDistraction state
+    setToast('Use the distraction field in Focus');
   }
 
   function copyShipLog() {
@@ -249,7 +250,13 @@ export default function ShipOSApp() {
       if (task) addEvent('task_completed', task.title);
     }
   };
-  const deleteTask = (id: string) => setState(s => ({ ...s, tasks: s.tasks.filter(t => t.id !== id), mission: { ...s.mission, top3: s.mission.top3.filter(x => x !== id) } }));
+  const archiveTask = (id: string) => {
+    const task = state.tasks.find(t => t.id === id);
+    if (!task) return;
+    setState(s => ({ ...s, tasks: s.tasks.map(t => t.id === id ? { ...t, status: 'archived' as TaskStatus, archivedAt: Date.now() } : t) }));
+    setUndoAction({ label: 'Task archived', undo: () => setState(s => ({ ...s, tasks: s.tasks.map(t => t.id === id ? { ...t, status: 'today' as TaskStatus, archivedAt: undefined } : t) })) });
+    addEvent('task_completed', 'Archived: ' + task.title);
+  };
 
   // Timer
   function startFocus(taskId?: string, minutes?: number) {
@@ -264,10 +271,12 @@ export default function ShipOSApp() {
   function completeFocus(early = false) {
     if (!state.activeTimer) return;
     const t = state.activeTimer;
-    const actual = early ? Math.round((t.plannedMinutes * 60000 - getRemainingMs(t)) / 60000) : t.plannedMinutes;
-    const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: Math.max(1, actual), startedAt: t.startedAt, endedAt: Date.now(), completed: !early };
+    const elapsedMs = t.plannedMinutes * 60000 - getRemainingMs(t);
+    const actualSec = Math.round(elapsedMs / 1000);
+    const actualMin = Math.max(1, Math.round(elapsedMs / 60000));
+    const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: actualMin, actualSeconds: actualSec, startedAt: t.startedAt, endedAt: Date.now(), completed: !early, status: early ? 'ended_early' : 'completed' };
     setState(s => ({ ...s, activeTimer: null, focusSessions: [...s.focusSessions, session] }));
-    addEvent('focus_completed', `${actual}m${t.taskId ? '' : ' (unlinked)'}`);
+    addEvent('focus_completed', `${actualMin}m${t.taskId ? '' : ' (unlinked)'}`);
     document.title = 'Kenshi ShipOS';
     setToast(early ? 'Focus ended early' : 'Focus complete! 🎯');
   }
@@ -286,7 +295,7 @@ export default function ShipOSApp() {
         if (!s.activeTimer || s.activeTimer.status !== 'running') return s;
         if (isTimerComplete(s.activeTimer)) {
           const t = s.activeTimer;
-          const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: t.plannedMinutes, startedAt: t.startedAt, endedAt: Date.now(), completed: true };
+          const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: t.plannedMinutes, actualSeconds: t.plannedMinutes * 60, startedAt: t.startedAt, endedAt: Date.now(), completed: true, status: 'completed' };
           document.title = 'Kenshi ShipOS';
           setTimeout(() => setToast('Focus complete! 🎯'), 100);
           return { ...s, activeTimer: null, focusSessions: [...s.focusSessions, session] };
@@ -304,7 +313,7 @@ export default function ShipOSApp() {
   const pageContent = useMemo(() => {
     switch (tab) {
       case 'today': return <TodayPage state={state} setState={setState} momentum={momentum} capacity={capacity} updateTask={updateTask} startFocus={startFocus} addEvent={addEvent} setToast={setToast} go={go} />;
-      case 'tasks': return <TasksPage state={state} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask} startFocus={startFocus} setToast={setToast} />;
+      case 'tasks': return <TasksPage state={state} addTask={addTask} updateTask={updateTask} deleteTask={archiveTask} startFocus={startFocus} setToast={setToast} />;
       case 'focus': return <FocusPage state={state} startFocus={startFocus} pauseFocus={pauseFocus} resumeFocus={resumeFocus} completeFocus={completeFocus} captureDistraction={quickCaptureDistraction} resolveBlocker={resolveBlocker} setState={setState} addEvent={addEvent} setToast={setToast} focusStartToken={focusStartToken} />;
       case 'review': return <ReviewPage state={state} setState={setState} reviewTab={reviewTab} setReviewTab={setReviewTab} copyShipLog={copyShipLog} setToast={setToast} addEvent={addEvent} />;
       case 'insights': return <InsightsPage state={state} momentum={momentum} />;
@@ -411,6 +420,33 @@ export default function ShipOSApp() {
       {onboardingOpen && ready && <Onboarding current={state} onFinish={finishOnboarding} />}
 
       {/* ── Toast ── */}
+      {/* Undo Toast */}
+      {undoAction && <div className="fixed bottom-24 left-1/2 z-[80] flex -translate-x-1/2 items-center gap-3 rounded-2xl bg-[#11131D] border border-white/10 px-4 py-3 text-sm font-bold shadow-2xl md:bottom-8"><span>{undoAction.label}</span><button onClick={() => { undoAction.undo(); setUndoAction(null); setToast('Undone'); }} className="rounded-xl bg-[#7C5CFF] px-3 py-1.5 text-xs font-black">Undo</button><button onClick={() => setUndoAction(null)} className="rounded-xl bg-white/10 px-3 py-1.5 text-xs">Dismiss</button></div>}
+
+      {/* Quick Task Sheet */}
+      {quickTaskOpen && <div className="fixed inset-0 z-[75] flex items-end justify-center bg-black/70 sm:items-center" onClick={() => setQuickTaskOpen(false)}>
+        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/10 bg-[#11131D] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
+          <h3 className="text-lg font-black">Quick capture</h3>
+          <p className="mt-1 text-xs text-[#A6ADBD]">Supports: !p0 #tag 30m tomorrow weekly</p>
+          <div className="mt-4 space-y-3">
+            <I v={quickTaskTitle} onChange={setQuickTaskTitle} placeholder="What needs to be done?" />
+            {quickTaskTitle.trim() && (() => { const p = parseQuickCapture(quickTaskTitle); return p ? <div className="rounded-xl bg-white/[0.05] p-3 text-xs"><p className="font-bold">{p.title}</p><p className="mt-1 text-[#A6ADBD]">{p.priority} · {p.estimateMinutes || 30}m{p.tags.length ? ' · ' + p.tags.map(t => '#'+t).join(' ') : ''}{p.scheduledDate ? ' · ' + p.scheduledDate : ''}</p></div> : null; })()}
+            <button onClick={submitQuickTask} className="w-full rounded-2xl bg-[#49D17D] py-3 font-black text-[#0B0D14]">Add task</button>
+          </div>
+        </div>
+      </div>}
+
+      {/* Quick Blocker Sheet */}
+      {quickBlockerOpen && <div className="fixed inset-0 z-[75] flex items-end justify-center bg-black/70 sm:items-center" onClick={() => setQuickBlockerOpen(false)}>
+        <div className="w-full max-w-lg rounded-t-[2rem] border border-white/10 bg-[#11131D] p-6 sm:rounded-[2rem]" onClick={e => e.stopPropagation()}>
+          <h3 className="text-lg font-black">What is blocking the ship?</h3>
+          <div className="mt-4 space-y-3">
+            <I v={quickTaskTitle} onChange={setQuickTaskTitle} placeholder="Describe the blocker" />
+            <button onClick={() => { if (!quickTaskTitle.trim()) return; setState(s => ({ ...s, blockers: [...s.blockers, { id: uid(), title: quickTaskTitle.trim(), severity: 'med', category: 'other', status: 'open', note: '', nextAction: '', createdAt: Date.now() }] })); addEvent('blocker_created', quickTaskTitle.trim()); setToast('Blocker added'); setQuickBlockerOpen(false); setQuickTaskTitle(''); }} className="w-full rounded-2xl bg-[#7C5CFF] py-3 font-black">Add blocker</button>
+          </div>
+        </div>
+      </div>}
+
       {toast && <div role="status" aria-live="polite" className="fixed left-1/2 top-4 z-[80] -translate-x-1/2 rounded-2xl bg-[#49D17D] px-4 py-3 text-sm font-black text-[#0B0D14] shadow-2xl">{toast}</div>}
 
       <footer className="mx-auto max-w-7xl px-4 pb-8 pt-3 text-center text-[10px] text-[#A6ADBD] sm:px-6 md:pb-6">Built for the VERSE community — Design vs Coding: Productivity Tools — July 2026</footer>
@@ -469,7 +505,7 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
     const next = current.includes(id) ? current.filter((x: string) => x !== id) : [...current, id].slice(0, 3);
     updateMission({ top3: next });
   };
-  const top3Tasks = state.tasks.filter((t: Task) => state.mission.top3.includes(t.id));
+  const top3Tasks = state.tasks.filter((t: Task) => state.mission.top3.includes(t.id) && t.status !== 'archived');
   const recentEvents = state.events.slice(-8).reverse();
   const defers = suggestDefers(state.tasks, state.mission.availableMinutes);
   const capLabel = capacity.label === 'balanced' ? 'Your plan fits with a buffer.' : capacity.label === 'tight' ? 'Your plan fits, but almost no recovery buffer.' : `You planned ${capacity.planned}m into ${capacity.safeCapacity}m safe capacity.`;
@@ -708,7 +744,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
           <h3 className="mb-2 text-sm font-black">Recent sessions</h3>
           <div className="space-y-1.5">{recentSessions.length > 0 ? recentSessions.map((s: FocusSession) => {
             const task = s.taskId ? state.tasks.find((t: Task) => t.id === s.taskId) : null;
-            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.completed ? 'bg-[#49D17D]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[#A6ADBD]">{s.actualMinutes}m · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
+            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.completed ? 'bg-[#49D17D]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[#A6ADBD]">{s.actualSeconds != null && s.actualSeconds < 60 ? '<1m' : s.actualMinutes + 'm'} · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
           }) : <Empty text="Your focus sessions will appear here." />}</div>
         </div>
       </div>
@@ -888,15 +924,15 @@ function NotesPanel({ state, setState, setToast }: any) {
 function InsightsPage({ state, momentum }: { state: AppState; momentum: MomentumBreakdown }) {
   const days = [6, 5, 4, 3, 2, 1, 0].map(d => {
     const x = new Date(); x.setDate(x.getDate() - d);
-    const key = x.toISOString().slice(0, 10);
-    const done = state.tasks.filter(t => t.completedAt && new Date(t.completedAt).toISOString().slice(0, 10) === key).length;
-    const focus = state.focusSessions.filter(s => new Date(s.endedAt || s.startedAt).toISOString().slice(0, 10) === key && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
+    const key = toLocalDateKey(x);
+    const done = state.tasks.filter(t => t.completedAt && localDateKeyFromTs(t.completedAt) === key).length;
+    const focus = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === key && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
     return { key, done, focus, score: done * 20 + focus };
   });
 
   const todayKey = today();
-  const focusToday = state.focusSessions.filter(s => new Date(s.endedAt || s.startedAt).toISOString().slice(0, 10) === todayKey && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
-  const doneToday = state.tasks.filter(t => t.completedAt && new Date(t.completedAt).toISOString().slice(0, 10) === todayKey).length;
+  const focusToday = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === todayKey && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
+  const doneToday = state.tasks.filter(t => t.completedAt && localDateKeyFromTs(t.completedAt) === todayKey).length;
   const resolved = state.blockers.filter(b => b.status === 'resolved').length;
   const distractions = state.distractions.length;
 
@@ -910,7 +946,7 @@ function InsightsPage({ state, momentum }: { state: AppState; momentum: Momentum
         <StatPill label="Focus week" value={`${days.reduce((a, d) => a + d.focus, 0)}m`} />
         <StatPill label="Distractions" value={distractions} />
         <StatPill label="Blockers" value={state.blockers.length} />
-        <StatPill label="Streak" value={(() => { let s = 0; for (let i = 0; i < 30; i++) { const d = new Date(); d.setDate(d.getDate() - i); const k = d.toISOString().slice(0, 10); if (state.tasks.some(t => t.completedAt && new Date(t.completedAt).toISOString().slice(0, 10) === k) || state.focusSessions.some(x => new Date(x.endedAt || x.startedAt).toISOString().slice(0, 10) === k)) s++; else if (i > 0) break; } return s; })()} />
+        <StatPill label="Streak" value={(() => { let s = 0; for (let i = 0; i < 30; i++) { const d = new Date(); d.setDate(d.getDate() - i); const k = toLocalDateKey(d); if (state.tasks.some(t => t.completedAt && localDateKeyFromTs(t.completedAt) === k) || state.focusSessions.some(x => localDateKeyFromTs(x.endedAt || x.startedAt) === k)) s++; else if (i > 0) break; } return s; })()} />
       </div>
     </Panel>
   </div>;
@@ -922,7 +958,7 @@ function SettingsPage({ state, setState, setToast, sampleWorkspace, onLoadSample
   const exportJson = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })); a.download = `shipos-export-${today()}.json`; a.click(); };
   const importJson = (file: File) => { const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(String(r.result)); if (d.v === 5) { setState(d); setToast('Import complete'); } else if (d.v === 2 || d.v === 3) { setState(migrateV3toV5(d)); setToast('Migrated and imported'); } else setToast('Invalid export'); } catch { setToast('Invalid JSON'); } }; r.readAsText(file); };
 
-  return <Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences.">
+  return <Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences." action={<div className="text-right text-[10px] text-[#A6ADBD]"><p>Build: {process.env.NEXT_PUBLIC_BUILD_SHA || 'local'}</p><p>{process.env.NEXT_PUBLIC_BUILD_TIME || ''}</p></div>}>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <button onClick={onReopenOnboarding} className="rounded-2xl bg-[#49D17D] px-4 py-4 font-black text-[#0B0D14]">Reopen onboarding</button>
       <button onClick={onLoadSample} className="rounded-2xl bg-[#39D0FF]/15 px-4 py-4 font-black text-[#39D0FF]">Explore sample workspace</button>
