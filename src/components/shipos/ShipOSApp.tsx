@@ -77,11 +77,11 @@ function demoState(): AppState {
     ],
     focusSessions: [{ id: 's1', taskId: 't1', mode: 'focus', plannedSeconds: 2700, actualSeconds: 2520, startedAt: now - 3000000, endedAt: now - 480000, status: 'completed' }],
     blockers: [
-      { id: 'b1', title: 'Browser wallet popup needs manual testing', severity: 'med', category: 'technical', status: 'open', note: 'Owner should test on real phone wallet.', nextAction: 'Ask owner to test on MetaMask mobile', createdAt: now - 900000 },
-      { id: 'b2', title: 'Missing API credentials for Supabase', severity: 'low', category: 'waiting', status: 'resolved', note: '', nextAction: '', createdAt: now - 5000000, resolvedAt: now - 2000000, resolveNote: 'Credentials provided by owner' },
+      { id: 'b1', title: 'The mobile task sheet hides the primary action', severity: 'med', category: 'technical', status: 'open', note: 'Need to reduce padding at small viewports.', nextAction: 'Reduce sheet padding and test at 360px', createdAt: now - 900000 },
+      { id: 'b2', title: 'Keyboard navigation skipped the close button', severity: 'low', category: 'waiting', status: 'resolved', note: '', nextAction: '', createdAt: now - 5000000, resolvedAt: now - 2000000, resolveNote: 'Added correct focus order and visible focus state' },
     ],
     distractions: [{ id: 'd1', text: 'Remember to reply to Alex about the deployment schedule', capturedAt: now - 600000, convertedToTask: false }],
-    decisions: [{ id: 'dec1', title: 'Keep demo mode separate', context: 'Real payment must be default for contest.', decision: 'Base Sepolia flow remains opt-in testnet demo.', expectedImpact: 'Cleaner contest submission', tags: ['architecture'], date: now - 800000 }],
+    decisions: [{ id: 'dec1', title: 'Keep first screen focused on One Mission and Top 3', context: 'The Today page must communicate value within 5 seconds.', decision: 'Mission, Capacity Guard, and Top 3 stay above the fold.', expectedImpact: 'Faster first impression for judges', tags: ['architecture'], date: now - 800000 }],
     events: [
       { id: 'e1', type: 'mission_created', detail: 'Mission set: Publish the final weekly product update', ts: now - 3700000 },
       { id: 'e2', type: 'task_completed', detail: 'Finish mobile responsive QA', ts: now - 1800000 },

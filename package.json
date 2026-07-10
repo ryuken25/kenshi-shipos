@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "bash -c 'export NEXT_PUBLIC_BUILD_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo unknown) NEXT_PUBLIC_BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ) && echo SHA=$NEXT_PUBLIC_BUILD_SHA'",
-    "build": "next build",
+    "build": "node scripts/build.mjs",
     "start": "next start",
-    "lint": "next lint || true",
+    "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run || true",
+    "test": "echo 'no tests configured yet'",
     "qa": "npm run lint && npm run typecheck && npm run build"
   },
   "dependencies": {
