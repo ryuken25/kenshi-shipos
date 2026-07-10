@@ -8,7 +8,7 @@
   "background_color": "#0a0e27",
   "theme_color": "#7c3aed",
   "icons": [
-    {"src": "/brand/verse/verse-logo.svg", "sizes": "any", "type": "image/svg+xml"},
+    
     {"src": "/brand/verse/verse-logo.png", "sizes": "512x512", "type": "image/png"}
   ]
 }

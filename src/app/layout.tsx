@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   alternates: { canonical: "/" },
   icons: {
-    icon: "/brand/verse/verse-logo.svg",
+    icon: "/brand/verse/verse-logo.png",
     apple: "/brand/verse/verse-logo.png",
   },
   openGraph: {

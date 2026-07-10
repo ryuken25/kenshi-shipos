@@ -13,7 +13,7 @@ export function VerseLogo({
 }: VerseLogoProps) {
   return (
     <Image
-      src="/brand/verse/verse-logo.svg"
+      src="/brand/verse/verse-logo.png"
       alt="VERSE"
       width={size}
       height={size}
