@@ -1,5 +1,8 @@
-import { redirect } from 'next/navigation';
-
-export default function Home() {
-  redirect('/mission');
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+export default function HomePage() {
+  const router = useRouter();
+  useEffect(() => { router.replace('/today'); }, [router]);
+  return null;
 }
