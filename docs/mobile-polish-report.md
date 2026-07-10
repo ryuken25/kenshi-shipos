@@ -1,36 +1,18 @@
-# ShipOS Mobile Polish Report
+# ShipOS Contest Hardening Report
 
-## Before issues
-- Hero was too vague; owner could not understand the product purpose.
-- No clear “who is this for” section.
-- No visible quick-start guide.
-- No demo workspace loader.
-- Prompt Vault and Ship Log lacked plain-language purpose.
+## Phase
+Weekly contest Phase 1 hardening.
 
-## Files changed
-- `src/app/page.tsx`
-- `src/app/globals.css`
-- `public/brand/kenshi/*.svg`
-- `public/brand/verse/verse-mark.svg`
-- `docs/asset-audit.md`
+## Changes
+- Reworked into tabbed SPA with desktop top tab bar.
+- Mobile fixed bottom nav: Mission / Tasks / Focus / More.
+- Hash deep-links for all modules.
+- Deepened modules: Mission, Task Board, Focus Cockpit, Blockers, Prompt Vault, Decisions, Ship Log, Stats, Settings.
+- Added localStorage v2 migration from old v1 keys.
+- Added export/import/reset.
+- Added Verse logo + Verse palette accents + footer/header identity.
+- Added Playwright screenshot matrix and smoke scripts.
 
-## Mobile fixes
-- Rewrote hero in plain language.
-- Added `Try Demo Day` loader.
-- Added “How to use ShipOS in 5 minutes”.
-- Added “Who is this for?” cards.
-- Mobile tabs remain one-tool-at-a-time.
-- Added global overflow-x and tap target baseline.
-
-## Desktop fixes
-- Stronger cockpit identity with local SVG visual.
-- Clearer workspace narrative.
-
-## Build result
-Pending after patch.
-
-## Deploy URL
-https://kenshi-shipos.vercel.app
-
-## Known limitations
-- Proof-of-Ship remains disabled intentionally; core local-first workflow prioritized.
+## Local QA
+- Viewport matrix: 81/81 PASS local (`qa/shipos-local-qa-results.json`).
+- Functional smoke: PASS (`/tmp/shipos_smoke2.log`).

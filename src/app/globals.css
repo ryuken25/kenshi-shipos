@@ -37,6 +37,8 @@ button, a, [role="button"], input, select, textarea { touch-action: manipulation
 }
 .min-screen-safe { min-height: 100svh; }
 .hash-chip { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: 'JetBrains Mono', monospace; }
+pre, code { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+* { min-width: 0; }
 
 .glass-panel {
   background: rgba(23, 25, 35, 0.7);
