@@ -1,5 +1,6 @@
 /* ── Ship Momentum — Transparent Execution Score ─────────── */
 import type { AppState } from './state/schema';
+import { toLocalDateKey } from './dates/localDate';
 
 export interface MomentumBreakdown {
   realityPlan: number;   // 0-20
@@ -39,17 +40,17 @@ export function calcMomentum(s: AppState): MomentumBreakdown {
   }
 
   // Focus (25)
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateKey();
   const focusToday = s.focusSessions
-    .filter(x => new Date(x.endedAt || x.startedAt).toISOString().slice(0, 10) === today && x.completed)
-    .reduce((a, b) => a + b.actualMinutes, 0);
+    .filter(x => toLocalDateKey(new Date(x.endedAt || x.startedAt)) === today && x.status === "completed")
+    .reduce((a, b) => a + Math.round(b.actualSeconds / 60), 0);
   const goal = s.settings.dailyFocusGoal || 120;
   const focus = Math.min(25, Math.round((focusToday / goal) * 25));
 
   // Recovery (15)
   const resolvedToday = s.blockers.filter(b => b.status === 'resolved' && b.resolvedAt &&
-    new Date(b.resolvedAt).toISOString().slice(0, 10) === today);
-  const recoverySprints = s.focusSessions.filter(x => x.mode === 'recovery' && x.completed).length;
+    toLocalDateKey(new Date(b.resolvedAt)) === today);
+  const recoverySprints = s.focusSessions.filter(x => x.mode === 'recovery' && x.status === "completed").length;
   const staleHigh = s.blockers.filter(b => b.status === 'open' && b.severity === 'high' &&
     Date.now() - b.createdAt > 3600000).length;
   const recovery = Math.max(0, Math.min(15, resolvedToday.length * 5 + recoverySprints * 3 - staleHigh * 3));

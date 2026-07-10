@@ -39,17 +39,17 @@ export interface Task {
   archivedAt?: number;
 }
 
+export type FocusSessionStatus = 'completed' | 'ended_early' | 'cancelled';
+
 export interface FocusSession {
   id: string;
   taskId?: string;
   mode: 'focus' | 'break' | 'recovery';
-  plannedMinutes: number;
-  actualMinutes: number;
-  actualSeconds?: number;
+  plannedSeconds: number;
+  actualSeconds: number;
   startedAt: number;
-  endedAt?: number;
-  completed: boolean;
-  status?: 'completed' | 'ended_early' | 'cancelled';
+  endedAt: number;
+  status: FocusSessionStatus;
 }
 
 export interface ActiveTimer {
@@ -150,7 +150,7 @@ export interface TimelineEntry {
 
 export interface AppEvent {
   id: string;
-  type: 'mission_created' | 'task_added' | 'task_completed' | 'focus_completed' | 'distraction_captured' | 'blocker_created' | 'blocker_resolved' | 'decision_recorded' | 'ship_log_generated' | 'recovery_sprint' | 'timer_started' | 'timer_paused' | 'timer_resumed';
+  type: 'mission_created' | 'task_added' | 'task_completed' | 'focus_completed' | 'distraction_captured' | 'blocker_created' | 'blocker_resolved' | 'decision_recorded' | 'ship_log_generated' | 'recovery_sprint' | 'timer_started' | 'timer_paused' | 'timer_resumed' | 'task_archived' | 'task_restored' | 'focus_ended_early' | 'focus_cancelled' | 'ship_log_copied' | 'ship_log_downloaded' | 'ship_log_shared' | 'capacity_deferred';
   detail: string;
   ts: number;
 }

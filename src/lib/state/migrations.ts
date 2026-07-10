@@ -1,5 +1,6 @@
 /* ── ShipOS v3→v5 Migration ───────────────────────────────── */
 import type { AppState, Task, Blocker, Decision, Note } from './schema';
+import { toLocalDateKey } from '../dates/localDate';
 
 interface V3State {
   v: 2 | 3;
@@ -12,7 +13,7 @@ interface V3State {
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10);
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toLocalDateKey();
 
 function mapTaskStatus(s: string): Task['status'] {
   if (s === 'backlog') return 'inbox';
@@ -89,11 +90,11 @@ export function migrateV3toV5(old: V3State): AppState {
     id: s.id,
     taskId: s.taskId,
     mode: 'focus' as const,
-    plannedMinutes: s.minutes,
-    actualMinutes: s.minutes,
+    plannedSeconds: s.minutes * 60,
+    actualSeconds: s.minutes * 60,
     startedAt: s.ts,
     endedAt: s.ts + s.minutes * 60000,
-    completed: true,
+    status: 'completed' as const,
   }));
 
   return {

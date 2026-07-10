@@ -1,5 +1,6 @@
 /* ── Natural-Language Quick Capture ───────────────────────── */
 import type { Task, Priority, Recurrence } from './state/schema';
+import { toLocalDateKey } from './dates/localDate';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -49,13 +50,13 @@ export function parseQuickCapture(input: string): ParsedTask | null {
   const now = new Date();
 
   if (/\btoday\b/i.test(text)) {
-    scheduledDate = now.toISOString().slice(0, 10);
+    scheduledDate = toLocalDateKey(now);
     dueAt = now.setHours(23, 59, 59, 999);
     text = text.replace(/\btoday\b/i, '').trim();
   } else if (/\btomorrow\b/i.test(text)) {
     const tmr = new Date(now);
     tmr.setDate(tmr.getDate() + 1);
-    scheduledDate = tmr.toISOString().slice(0, 10);
+    scheduledDate = toLocalDateKey(tmr);
     dueAt = tmr.setHours(23, 59, 59, 999);
     text = text.replace(/\btomorrow\b/i, '').trim();
   } else {
@@ -65,7 +66,7 @@ export function parseQuickCapture(input: string): ParsedTask | null {
         const target = new Date(now);
         const diff = (dayNum - now.getDay() + 7) % 7 || 7;
         target.setDate(target.getDate() + diff);
-        scheduledDate = target.toISOString().slice(0, 10);
+        scheduledDate = toLocalDateKey(target);
         dueAt = target.setHours(23, 59, 59, 999);
         text = text.replace(regex, '').trim();
         break;

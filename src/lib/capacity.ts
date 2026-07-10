@@ -3,11 +3,18 @@ import type { Task, DailyPlan, TimelineEntry } from './state/schema';
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+export function clamp(val: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, Number.isFinite(val) ? val : 0));
+}
+
 export function computeCapacity(tasks: Task[], availableMinutes: number) {
+  const normalizedAvailable = clamp(availableMinutes, 0, 24 * 60);
   const todayTasks = tasks.filter(t => t.status === 'today' || t.status === 'doing');
+  const tasksWithEstimate = todayTasks.filter(t => t.estimateMinutes && t.estimateMinutes > 0);
+  const tasksMissingEstimate = todayTasks.length - tasksWithEstimate.length;
   const planned = todayTasks.reduce((sum, t) => sum + (t.estimateMinutes || 30), 0);
-  const buffer = Math.max(15, Math.round(availableMinutes * 0.15));
-  const safeCapacity = availableMinutes - buffer;
+  const buffer = normalizedAvailable === 0 ? 0 : Math.min(normalizedAvailable, Math.max(15, Math.round(normalizedAvailable * 0.15)));
+  const safeCapacity = Math.max(0, normalizedAvailable - buffer);
   const remaining = safeCapacity - planned;
   const overcommitted = planned > safeCapacity;
 
@@ -16,7 +23,7 @@ export function computeCapacity(tasks: Task[], availableMinutes: number) {
   else if (planned <= safeCapacity) label = 'tight';
   else label = 'overloaded';
 
-  return { planned, buffer, safeCapacity, remaining, overcommitted, label, todayTasks };
+  return { planned, buffer, safeCapacity, remaining, overcommitted, label, todayTasks, tasksMissingEstimate };
 }
 
 export function suggestDefers(tasks: Task[], availableMinutes: number): { task: Task; reason: string; minutesSaved: number }[] {

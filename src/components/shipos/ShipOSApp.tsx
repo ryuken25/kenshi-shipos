@@ -10,7 +10,7 @@ import {
   ChevronDown, ArrowRight, RotateCcw, ClipboardCheck, StickyNote, TrendingUp,
   Lightbulb, Calendar, Coffee, AlertCircle, CheckCircle2, Circle
 } from 'lucide-react';
-import type { AppState, Task, Blocker, Distraction, Decision, Note, FocusSession, ActiveTimer, Priority, TaskStatus, Severity, BlockerCategory, Energy, AppEvent, ShipLog } from '@/lib/state/schema';
+import type { AppState, Task, Blocker, Distraction, Decision, Note, FocusSession, FocusSessionStatus, ActiveTimer, Priority, TaskStatus, Severity, BlockerCategory, Energy, AppEvent, ShipLog } from '@/lib/state/schema';
 import { STORAGE_KEY, PREV_KEYS, ONBOARDING_KEY, SAMPLE_KEY } from '@/lib/state/schema';
 import { migrateV3toV5, migrateFromV1V2 } from '@/lib/state/migrations';
 import { computeCapacity, suggestDefers, generateTimeline } from '@/lib/capacity';
@@ -75,7 +75,7 @@ function demoState(): AppState {
       { id: 't3', title: 'Generate and share the final Ship Log', notes: 'Create final update for Telegram/GitHub.', status: 'today', priority: 'P1', tags: ['report'], subtasks: [], estimateMinutes: 25, topThreeRank: 3, createdAt: now - 1600000, updatedAt: now, recurrence: { type: 'none' } },
       { id: 't4', title: 'Polish secondary chart alignment', notes: '', status: 'today', priority: 'P2', tags: ['ui'], subtasks: [], estimateMinutes: 30, createdAt: now - 1000000, updatedAt: now, recurrence: { type: 'none' } },
     ],
-    focusSessions: [{ id: 's1', taskId: 't1', mode: 'focus', plannedMinutes: 45, actualMinutes: 42, startedAt: now - 3000000, endedAt: now - 480000, completed: true }],
+    focusSessions: [{ id: 's1', taskId: 't1', mode: 'focus', plannedSeconds: 2700, actualSeconds: 2520, startedAt: now - 3000000, endedAt: now - 480000, status: 'completed' }],
     blockers: [
       { id: 'b1', title: 'Browser wallet popup needs manual testing', severity: 'med', category: 'technical', status: 'open', note: 'Owner should test on real phone wallet.', nextAction: 'Ask owner to test on MetaMask mobile', createdAt: now - 900000 },
       { id: 'b2', title: 'Missing API credentials for Supabase', severity: 'low', category: 'waiting', status: 'resolved', note: '', nextAction: '', createdAt: now - 5000000, resolvedAt: now - 2000000, resolveNote: 'Credentials provided by owner' },
@@ -225,13 +225,20 @@ export default function ShipOSApp() {
     setToast('Use the distraction field in Focus');
   }
 
-  function copyShipLog() {
+  async function copyShipLog() {
     const text = generateShipLog(state, 'today');
-    navigator.clipboard.writeText(text).then(() => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      }
       setState(s => ({ ...s, shipLogs: [...s.shipLogs, { id: uid(), date: today(), range: 'today', format: 'markdown', content: text, shared: true, createdAt: Date.now() }] }));
-      addEvent('ship_log_generated', 'Ship Log copied');
+      addEvent('ship_log_copied', 'Ship Log copied');
       setToast('Ship Log copied');
-    });
+    } catch { setToast('Copy failed — try downloading instead'); }
     setPaletteOpen(false);
   }
 
@@ -253,9 +260,13 @@ export default function ShipOSApp() {
   const archiveTask = (id: string) => {
     const task = state.tasks.find(t => t.id === id);
     if (!task) return;
+    const prevStatus = task.status;
+    const prevTop3 = task.topThreeRank;
     setState(s => ({ ...s, tasks: s.tasks.map(t => t.id === id ? { ...t, status: 'archived' as TaskStatus, archivedAt: Date.now() } : t) }));
-    setUndoAction({ label: 'Task archived', undo: () => setState(s => ({ ...s, tasks: s.tasks.map(t => t.id === id ? { ...t, status: 'today' as TaskStatus, archivedAt: undefined } : t) })) });
-    addEvent('task_completed', 'Archived: ' + task.title);
+    setUndoAction({ label: 'Task archived', undo: () => {
+      setState(s => ({ ...s, tasks: s.tasks.map(t => t.id === id ? { ...t, status: prevStatus, archivedAt: undefined, topThreeRank: prevTop3 } : t) }));
+    }});
+    addEvent('task_archived', task.title);
   };
 
   // Timer
@@ -273,10 +284,9 @@ export default function ShipOSApp() {
     const t = state.activeTimer;
     const elapsedMs = t.plannedMinutes * 60000 - getRemainingMs(t);
     const actualSec = Math.round(elapsedMs / 1000);
-    const actualMin = Math.max(1, Math.round(elapsedMs / 60000));
-    const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: actualMin, actualSeconds: actualSec, startedAt: t.startedAt, endedAt: Date.now(), completed: !early, status: early ? 'ended_early' : 'completed' };
+    const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedSeconds: t.plannedMinutes * 60, actualSeconds: actualSec, startedAt: t.startedAt, endedAt: Date.now(), status: early ? 'ended_early' : 'completed' };
     setState(s => ({ ...s, activeTimer: null, focusSessions: [...s.focusSessions, session] }));
-    addEvent('focus_completed', `${actualMin}m${t.taskId ? '' : ' (unlinked)'}`);
+    addEvent(early ? 'focus_ended_early' : 'focus_completed', `${Math.round(actualSec / 60)}m${t.taskId ? '' : ' (unlinked)'}`);
     document.title = 'Kenshi ShipOS';
     setToast(early ? 'Focus ended early' : 'Focus complete! 🎯');
   }
@@ -295,7 +305,7 @@ export default function ShipOSApp() {
         if (!s.activeTimer || s.activeTimer.status !== 'running') return s;
         if (isTimerComplete(s.activeTimer)) {
           const t = s.activeTimer;
-          const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedMinutes: t.plannedMinutes, actualMinutes: t.plannedMinutes, actualSeconds: t.plannedMinutes * 60, startedAt: t.startedAt, endedAt: Date.now(), completed: true, status: 'completed' };
+          const session: FocusSession = { id: uid(), taskId: t.taskId, mode: t.mode, plannedSeconds: t.plannedMinutes * 60, actualSeconds: t.plannedMinutes * 60, startedAt: t.startedAt, endedAt: Date.now(), status: 'completed' };
           document.title = 'Kenshi ShipOS';
           setTimeout(() => setToast('Focus complete! 🎯'), 100);
           return { ...s, activeTimer: null, focusSessions: [...s.focusSessions, session] };
@@ -744,7 +754,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
           <h3 className="mb-2 text-sm font-black">Recent sessions</h3>
           <div className="space-y-1.5">{recentSessions.length > 0 ? recentSessions.map((s: FocusSession) => {
             const task = s.taskId ? state.tasks.find((t: Task) => t.id === s.taskId) : null;
-            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.completed ? 'bg-[#49D17D]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[#A6ADBD]">{s.actualSeconds != null && s.actualSeconds < 60 ? '<1m' : s.actualMinutes + 'm'} · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
+            return <div key={s.id} className="flex items-center gap-3 rounded-xl bg-white/[0.04] p-2.5"><span className={`h-2 w-2 rounded-full ${s.status === 'completed' ? 'bg-[#49D17D]' : 'bg-yellow-400'}`} /><div className="min-w-0 flex-1"><p className="text-xs font-bold">{task?.title || 'Unlinked'}</p><p className="text-[10px] text-[#A6ADBD]">{s.actualSeconds < 60 ? '<1m' : Math.round(s.actualSeconds / 60) + 'm'} · {new Date(s.startedAt).toLocaleTimeString()}</p></div></div>;
           }) : <Empty text="Your focus sessions will appear here." />}</div>
         </div>
       </div>
@@ -926,12 +936,12 @@ function InsightsPage({ state, momentum }: { state: AppState; momentum: Momentum
     const x = new Date(); x.setDate(x.getDate() - d);
     const key = toLocalDateKey(x);
     const done = state.tasks.filter(t => t.completedAt && localDateKeyFromTs(t.completedAt) === key).length;
-    const focus = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === key && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
+    const focus = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === key && s.status === "completed").reduce((a, b) => a + Math.round(b.actualSeconds / 60), 0);
     return { key, done, focus, score: done * 20 + focus };
   });
 
   const todayKey = today();
-  const focusToday = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === todayKey && s.completed).reduce((a, b) => a + b.actualMinutes, 0);
+  const focusToday = state.focusSessions.filter(s => localDateKeyFromTs(s.endedAt || s.startedAt) === todayKey && s.status === "completed").reduce((a, b) => a + Math.round(b.actualSeconds / 60), 0);
   const doneToday = state.tasks.filter(t => t.completedAt && localDateKeyFromTs(t.completedAt) === todayKey).length;
   const resolved = state.blockers.filter(b => b.status === 'resolved').length;
   const distractions = state.distractions.length;

@@ -1,7 +1,8 @@
 /* ── Auto Ship Log Generator ──────────────────────────────── */
 import type { AppState, ShipLog } from './state/schema';
+import { toLocalDateKey } from './dates/localDate';
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toLocalDateKey();
 
 export function generateShipLog(s: AppState, range: 'today' | 'week', format: ShipLog['format'] = 'markdown'): string {
   const day = today();
@@ -9,12 +10,12 @@ export function generateShipLog(s: AppState, range: 'today' | 'week', format: Sh
   const isToday = range === 'today';
 
   const inRange = (ts: number) => isToday
-    ? new Date(ts).toISOString().slice(0, 10) === day
+    ? toLocalDateKey(new Date(ts)) === day
     : ts >= weekAgo;
 
   const done = s.tasks.filter(t => t.completedAt && inRange(t.completedAt));
-  const focusSessions = s.focusSessions.filter(x => inRange(x.startedAt) && x.completed);
-  const focusMinutes = focusSessions.reduce((a, b) => a + b.actualMinutes, 0);
+  const focusSessions = s.focusSessions.filter(x => inRange(x.startedAt) && x.status === "completed");
+  const focusMinutes = focusSessions.reduce((a, b) => a + Math.round(b.actualSeconds / 60), 0);
   const distractions = s.distractions.filter(d => inRange(d.capturedAt));
   const blockersCreated = s.blockers.filter(b => inRange(b.createdAt));
   const blockersResolved = s.blockers.filter(b => b.resolvedAt && inRange(b.resolvedAt));
@@ -61,7 +62,7 @@ export function generateShipLog(s: AppState, range: 'today' | 'week', format: Sh
   lines.push(...focusSessions.map(x => {
     const linked = x.taskId ? s.tasks.find(t => t.id === x.taskId) : null;
     const suffix = linked ? ' → ' + linked.title : '';
-    return `- ${x.plannedMinutes}m${suffix}`;
+    return `- ${Math.round(x.plannedSeconds / 60)}m${suffix}`;
   }));
   if (!focusSessions.length) lines.push('- _No focus sessions_');
   lines.push('');
