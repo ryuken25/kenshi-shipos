@@ -1,2 +1,2 @@
 import ShipOSApp from '@/components/shipos/ShipOSApp';
-export default function TodayPage() { return <ShipOSApp />; }
+export default function TodayPage() { return <ShipOSApp initialTab="today" />; }

@@ -1,2 +1,2 @@
-import ShipOSApp from '@/components/shipos/ShipOSApp';
-export default function Page() { return <ShipOSApp />; }
+import { redirect } from 'next/navigation';
+export default function LegacyPage() { redirect('/insights'); }

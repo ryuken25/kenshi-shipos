@@ -18,10 +18,11 @@ import { calcMomentum, type MomentumBreakdown } from '@/lib/momentum';
 import { generateShipLog } from '@/lib/ship-log';
 import { createTimer, getRemainingMs, getDisplayTime, pauseTimer, resumeTimer, isTimerComplete, formatTime } from '@/lib/timer';
 import { parseQuickCapture, createTaskFromParsed, type ParsedTask } from '@/lib/task-parser';
+import { getTabFromPathname, getPathForTab, type ShipOSTab, TAB_TO_PATH } from '@/lib/navigation/shiposRoutes';
 import { toLocalDateKey, greeting, localDateKeyFromTs, isToday as isTodayDate } from '@/lib/dates/localDate';
 
 /* ── Types ────────────────────────────────────────────────── */
-type Tab = 'today' | 'tasks' | 'focus' | 'review' | 'insights' | 'settings';
+type Tab = ShipOSTab;
 type ReviewTab = 'ship-log' | 'blockers' | 'decisions' | 'notes';
 
 const today = () => toLocalDateKey();
@@ -40,14 +41,14 @@ const bottomNav = navItems.slice(0, 4);
 const moreNav = navItems.slice(4);
 
 /* ── Route maps (v5 + legacy redirects) ──────────────────── */
-const routeMap: Record<Tab, string> = { today: '/today', tasks: '/tasks', focus: '/focus', review: '/review', insights: '/insights', settings: '/settings' };
+const routeMap = TAB_TO_PATH;
 const legacyRedirects: Record<string, Tab> = {
   '/mission': 'today', '/blockers': 'review', '/decisions': 'review',
   '/ship-log': 'review', '/vault': 'review', '/stats': 'insights',
 };
 const pathToTab = (path: string): Tab => {
-  for (const [r, t] of Object.entries(routeMap)) if (path === r) return t as Tab;
-  for (const [r, t] of Object.entries(legacyRedirects)) if (path === r) return t;
+  return getTabFromPathname(path) ?? 'today';
+  if (legacyRedirects[path]) return legacyRedirects[path];
   return 'today';
 };
 
@@ -107,12 +108,12 @@ function loadState(): AppState {
 }
 
 /* ── Main App ─────────────────────────────────────────────── */
-export default function ShipOSApp() {
+export default function ShipOSApp({ initialTab = 'today' }: { initialTab?: Tab } = {}) {
   const [state, setState] = useState<AppState>(defaultState());
   const [ready, setReady] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>(() => pathToTab(pathname));
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [reviewTab, setReviewTab] = useState<ReviewTab>('ship-log');
   const [moreOpen, setMoreOpen] = useState(false);
   const [toast, setToast] = useState('');
@@ -133,7 +134,6 @@ export default function ShipOSApp() {
     // Legacy redirect
     const legacy = legacyRedirects[window.location.pathname];
     if (legacy) router.replace(routeMap[legacy]);
-    else setTab(pathToTab(window.location.pathname));
     setReady(true);
   }, []);
 
@@ -520,7 +520,7 @@ function TodayPage({ state, setState, momentum, capacity, updateTask, startFocus
   const defers = suggestDefers(state.tasks, state.mission.availableMinutes);
   const capLabel = capacity.label === 'balanced' ? 'Your plan fits with a buffer.' : capacity.label === 'tight' ? 'Your plan fits, but almost no recovery buffer.' : `You planned ${capacity.planned}m into ${capacity.safeCapacity}m safe capacity.`;
 
-  return <div className="space-y-4">
+  return <div className="space-y-4" data-page="today">
     {/* Mission + Momentum */}
     <div className="grid gap-4 lg:grid-cols-[1.1fr_.9fr]">
       <Panel title="Today" subtitle="Set one outcome and the time you truly have.">
@@ -650,7 +650,7 @@ function TasksPage({ state, addTask, updateTask, deleteTask, startFocus, setToas
 
   const cols: TaskStatus[] = ['inbox', 'today', 'doing', 'done'];
 
-  return <Panel title="Tasks" subtitle="Capture the next action, not the entire project." action={<div className="flex gap-1"><button onClick={() => setView('list')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'list' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>List</button><button onClick={() => setView('board')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'board' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>Board</button></div>}>
+  return <div data-page="tasks"><Panel title="Tasks" subtitle="Capture the next action, not the entire project." action={<div className="flex gap-1"><button onClick={() => setView('list')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'list' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>List</button><button onClick={() => setView('board')} className={`rounded-xl px-3 py-2 text-xs font-bold ${view === 'board' ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>Board</button></div>}>
     {/* Quick add */}
     <div className="grid gap-2 rounded-3xl bg-white/[0.03] p-3 sm:grid-cols-[1fr_auto_auto_auto_auto]">
       <I v={title} onChange={setTitle} placeholder="New task (or paste: Finish QA !p0 #mobile 30m)" />
@@ -703,7 +703,7 @@ function TasksPage({ state, addTask, updateTask, deleteTask, startFocus, setToas
         ))}{filtered.filter((t: Task) => t.status === col).length === 0 && <p className="py-4 text-center text-[10px] text-[#A6ADBD]">Empty</p>}</div>
       </div>
     ))}</div>}
-  </Panel>;
+  </Panel></div>;
 }
 
 /* ── FOCUS PAGE ───────────────────────────────────────────── */
@@ -741,7 +741,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
 
   if (!timer) {
     const nextTask = state.tasks.find((t: Task) => t.status === 'today' || t.status === 'doing');
-    return <Panel title="Focus Cockpit" subtitle="Choose one task and protect the next block of time.">
+    return <div data-page="focus"><Panel title="Focus Cockpit" subtitle="Choose one task and protect the next block of time.">
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-[2rem] border border-[#7C5CFF]/30 bg-[#7C5CFF]/10 p-6 text-center">
           <p className="text-xs font-black uppercase tracking-wider text-[#39D0FF]">Ready to focus</p>
@@ -758,14 +758,14 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
           }) : <Empty text="Your focus sessions will appear here." />}</div>
         </div>
       </div>
-    </Panel>;
+    </Panel></div>;
   }
 
   // Active timer
   const { minutes, seconds, progress } = getDisplayTime(timer);
   const circumference = 2 * Math.PI * 54;
 
-  return <Panel title="Focus Cockpit" subtitle={linkedTask ? `Working on: ${linkedTask.title}` : 'Unlinked focus session'}>
+  return <div data-page="focus"><Panel title="Focus Cockpit" subtitle={linkedTask ? `Working on: ${linkedTask.title}` : 'Unlinked focus session'}>
     <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
       <div className="flex flex-col items-center rounded-[2rem] border border-[#7C5CFF]/30 bg-[#7C5CFF]/10 p-8">
         <p className="text-xs font-black uppercase tracking-wider text-[#39D0FF]">{timer.mode === 'recovery' ? 'Recovery Sprint' : 'Focused work sprint'}</p>
@@ -838,7 +838,7 @@ function FocusPage({ state, startFocus, pauseFocus, resumeFocus, completeFocus, 
         </div>
       </div>
     </div>}
-  </Panel>;
+  </Panel></div>;
 }
 
 /* ── REVIEW PAGE ──────────────────────────────────────────── */
@@ -850,7 +850,7 @@ function ReviewPage({ state, setState, reviewTab, setReviewTab, copyShipLog, set
     { id: 'notes', label: 'Notes', icon: StickyNote },
   ];
 
-  return <div className="space-y-4">
+  return <div className="space-y-4" data-page="review">
     <div className="flex gap-1.5 overflow-x-auto pb-1">
       {tabs.map(t => <button key={t.id} onClick={() => setReviewTab(t.id)} className={`flex items-center gap-1.5 rounded-2xl px-4 py-2 text-xs font-black ${reviewTab === t.id ? 'bg-[#7C5CFF] text-white' : 'bg-white/5 text-[#A6ADBD]'}`}><t.icon size={14} />{t.label}</button>)}
     </div>
@@ -946,7 +946,7 @@ function InsightsPage({ state, momentum }: { state: AppState; momentum: Momentum
   const resolved = state.blockers.filter(b => b.status === 'resolved').length;
   const distractions = state.distractions.length;
 
-  return <div className="space-y-4">
+  return <div className="space-y-4" data-page="insights">
     <Panel title="Insights" subtitle="Real trends appear after a few sessions.">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4"><StatPill label="Momentum" value={momentum.total} /><StatPill label="Done today" value={doneToday} /><StatPill label="Focus today" value={`${focusToday}m`} /><StatPill label="Resolved" value={resolved} /></div>
       <div className="mt-6 rounded-3xl bg-white/[0.03] p-4"><p className="mb-3 text-xs font-black">Weekly activity</p>
@@ -968,7 +968,7 @@ function SettingsPage({ state, setState, setToast, sampleWorkspace, onLoadSample
   const exportJson = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })); a.download = `shipos-export-${today()}.json`; a.click(); };
   const importJson = (file: File) => { const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(String(r.result)); if (d.v === 5) { setState(d); setToast('Import complete'); } else if (d.v === 2 || d.v === 3) { setState(migrateV3toV5(d)); setToast('Migrated and imported'); } else setToast('Invalid export'); } catch { setToast('Invalid JSON'); } }; r.readAsText(file); };
 
-  return <Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences." action={<div className="text-right text-[10px] text-[#A6ADBD]"><p>Build: {process.env.NEXT_PUBLIC_BUILD_SHA || 'local'}</p><p>{process.env.NEXT_PUBLIC_BUILD_TIME || ''}</p></div>}>
+  return <div data-page="settings"><Panel title="Settings" subtitle="Own your workspace: themes, backup, and preferences." action={<div className="text-right text-[10px] text-[#A6ADBD]"><p>Build: {process.env.NEXT_PUBLIC_BUILD_SHA || 'local'}</p><p>{process.env.NEXT_PUBLIC_BUILD_TIME || ''}</p></div>}>
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <button onClick={onReopenOnboarding} className="rounded-2xl bg-[#49D17D] px-4 py-4 font-black text-[#0B0D14]">Reopen onboarding</button>
       <button onClick={onLoadSample} className="rounded-2xl bg-[#39D0FF]/15 px-4 py-4 font-black text-[#39D0FF]">Explore sample workspace</button>
@@ -986,7 +986,7 @@ function SettingsPage({ state, setState, setToast, sampleWorkspace, onLoadSample
         <div className="flex gap-1">{[25, 50, 90].map(m => <button key={m} onClick={() => updateSettings({ defaultFocusPreset: m })} className={`flex-1 rounded-xl py-2 text-xs font-black ${state.settings.defaultFocusPreset === m ? 'bg-[#7C5CFF]' : 'bg-white/5'}`}>{m}m</button>)}</div>
       </div>
     </div>
-  </Panel>;
+  </Panel></div>;
 }
 
 /* ── ONBOARDING ───────────────────────────────────────────── */
